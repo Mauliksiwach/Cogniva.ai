@@ -1,5 +1,6 @@
-import os
+﻿import os
 import re
+from typing import Optional
 
 ALLOWED_EXTENSIONS = {".pdf"}
 ALLOWED_MIME_TYPES = {"application/pdf"}
