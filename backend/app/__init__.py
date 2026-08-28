@@ -1,0 +1,1 @@
+"""StudyPilot Backend Application Package."""
