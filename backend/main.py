@@ -14,8 +14,8 @@ async def lifespan(app: FastAPI):
     yield
 
 app = FastAPI(
-    title="StudyPilot API",
-    description="Production-grade AI Study Copilot REST API backend",
+    title="Cogniva AI API",
+    description="Cogniva AI — Production REST API Backend for AI-Powered Learning Companion",
     version="1.0.0",
     lifespan=lifespan,
     docs_url="/docs",
@@ -42,7 +42,7 @@ app.include_router(api_v1_router)
 @app.get("/")
 async def root():
     return {
-        "name": "StudyPilot API",
+        "name": "Cogniva AI API",
         "version": "1.0.0",
         "docs": "/docs",
         "health": "/api/v1/health"

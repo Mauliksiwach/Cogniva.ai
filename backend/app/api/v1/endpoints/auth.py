@@ -20,7 +20,7 @@ async def health_check():
     )
     return APIResponse(
         success=True,
-        message="StudyPilot API is operating normally",
+        message="Cogniva AI API is operating normally",
         data=health_data
     )
 

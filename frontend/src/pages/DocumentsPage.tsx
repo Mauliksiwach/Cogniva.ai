@@ -163,7 +163,7 @@ export const DocumentsPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-800">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Study Materials</h1>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Your Study Material</h1>
             <Badge variant="brand" size="sm">{documents.length} Documents</Badge>
           </div>
           <p className="text-slate-400 text-sm">
@@ -203,7 +203,7 @@ export const DocumentsPage: React.FC = () => {
             <UploadCloud className="w-7 h-7" />
           </div>
           <h3 className="text-lg font-bold text-white mb-2">
-            {searchQuery ? 'No matching documents found' : 'No study materials uploaded yet'}
+            {searchQuery ? 'No matching documents found' : 'No study materials in Cogniva Library yet'}
           </h3>
           <p className="text-slate-400 text-sm max-w-md mx-auto mb-6">
             {searchQuery
@@ -283,7 +283,7 @@ export const DocumentsPage: React.FC = () => {
                   </button>
                   <button
                     onClick={() => navigate('/chat')}
-                    title="Ask AI about this document"
+                    title="Ask Cogniva AI about this document"
                     className="p-2 rounded-xl text-brand-400 hover:text-brand-300 hover:bg-brand-500/10 transition-colors"
                   >
                     <MessageSquare className="w-4 h-4" />

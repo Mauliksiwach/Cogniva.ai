@@ -1,12 +1,12 @@
 @echo off
-title StudyPilot - Push to GitHub
-cd /d "C:\Users\mauli\.gemini\antigravity\scratch\studypilot"
+title Cogniva AI - Push to GitHub
+cd /d "%~dp0"
 echo ========================================================
-echo Pushing StudyPilot to https://github.com/Mauliksiwach/studypilot.ai
+echo Pushing Cogniva AI to GitHub...
 echo ========================================================
-"C:\Users\mauli\AppData\Local\Programs\git\cmd\git.exe" push -u origin main --force
+git push -u origin main
 echo.
 echo ========================================================
-echo Completed! Check your GitHub repo.
+echo Push complete!
 echo ========================================================
 pause

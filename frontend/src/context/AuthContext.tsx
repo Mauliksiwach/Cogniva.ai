@@ -21,7 +21,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const initAuth = async () => {
       try {
-        // 1. Check Supabase session
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.user) {
           setUser({
@@ -35,8 +34,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           return;
         }
 
-        // 2. Fallback to persisted dev session if available
-        const savedDevUser = localStorage.getItem('studypilot_dev_user');
+        const savedDevUser = localStorage.getItem('cogniva_user') || localStorage.getItem('studypilot_dev_user');
         if (savedDevUser) {
           setUser(JSON.parse(savedDevUser));
           setIsDevAuth(true);
@@ -59,7 +57,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           avatar_url: session.user.user_metadata?.avatar_url,
         });
         setIsDevAuth(false);
-      } else if (!localStorage.getItem('studypilot_dev_user')) {
+      } else if (!localStorage.getItem('cogniva_user')) {
         setUser(null);
       }
     });
@@ -83,14 +81,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       }
 
-      // Demo/Dev session mode
       const devUser: User = {
         id: 'user_' + email.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase(),
         email: email,
         full_name: email.split('@')[0].replace('.', ' ').toUpperCase(),
       };
-      localStorage.setItem('studypilot_dev_user', JSON.stringify(devUser));
-      localStorage.setItem('studypilot_dev_token', `dev-token-${devUser.id}`);
+      localStorage.setItem('cogniva_user', JSON.stringify(devUser));
+      localStorage.setItem('cogniva_token', `dev-token-${devUser.id}`);
       setUser(devUser);
       setIsDevAuth(true);
       return { success: true };
@@ -118,14 +115,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       }
 
-      // Quick-start mode
       const devUser: User = {
         id: 'user_' + Math.random().toString(36).substring(2, 9),
         email,
         full_name: fullName || email.split('@')[0],
       };
-      localStorage.setItem('studypilot_dev_user', JSON.stringify(devUser));
-      localStorage.setItem('studypilot_dev_token', `dev-token-${devUser.id}`);
+      localStorage.setItem('cogniva_user', JSON.stringify(devUser));
+      localStorage.setItem('cogniva_token', `dev-token-${devUser.id}`);
       setUser(devUser);
       setIsDevAuth(true);
       return { success: true };
@@ -136,6 +132,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = async () => {
     await supabase.auth.signOut().catch(() => {});
+    localStorage.removeItem('cogniva_user');
+    localStorage.removeItem('cogniva_token');
     localStorage.removeItem('studypilot_dev_user');
     localStorage.removeItem('studypilot_dev_token');
     setUser(null);

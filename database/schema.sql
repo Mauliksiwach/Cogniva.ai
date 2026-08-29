@@ -1,5 +1,5 @@
 -- ==============================================================================
--- STUDYPILOT DATABASE SCHEMA
+-- COGNIVA AI DATABASE SCHEMA
 -- PostgreSQL schema designed for Supabase with multi-tenant RLS isolation
 -- ==============================================================================
 

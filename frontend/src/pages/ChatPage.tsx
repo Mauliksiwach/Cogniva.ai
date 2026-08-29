@@ -210,7 +210,7 @@ export const ChatPage: React.FC = () => {
           </div>
           <div>
             <h1 className="text-base font-bold text-white flex items-center gap-2">
-              Grounded AI Study Assistant
+              Ask Cogniva AI
               <Badge variant="brand" size="sm">RAG Engine</Badge>
             </h1>
             <p className="text-xs text-slate-400">
@@ -288,7 +288,7 @@ export const ChatPage: React.FC = () => {
             </div>
             <h3 className="text-lg font-bold text-white mb-2">Upload Materials to Start Chatting</h3>
             <p className="text-slate-400 text-sm mb-6">
-              StudyPilot needs your course slides or notes to retrieve and cite accurate answers.
+              Cogniva AI needs your study materials or notes to retrieve and cite accurate answers.
             </p>
             <Link to="/documents">
               <Button icon={<Plus className="w-4 h-4" />}>
@@ -304,7 +304,7 @@ export const ChatPage: React.FC = () => {
             </div>
             <div>
               <h3 className="text-xl font-extrabold text-white tracking-tight">
-                Ask anything about your study materials
+                Ask anything about your study material
               </h3>
               <p className="text-slate-400 text-sm mt-1">
                 Every response is mathematically retrieved and verified against your documents.

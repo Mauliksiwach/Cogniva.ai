@@ -9,7 +9,7 @@ async def test_root_endpoint():
         response = await client.get("/")
         assert response.status_code == 200
         data = response.json()
-        assert data["name"] == "StudyPilot API"
+        assert data["name"] == "Cogniva AI API"
         assert data["version"] == "1.0.0"
 
 @pytest.mark.asyncio

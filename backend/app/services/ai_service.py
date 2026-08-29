@@ -44,7 +44,7 @@ class AIService:
         if self._gemini_client:
             try:
                 system_instruction = (
-                    "You are StudyPilot, an expert university academic study copilot. "
+                    "You are Cogniva AI, an intelligent learning companion and academic study tutor. "
                     "Your primary rule is STRICT GROUNDING: answer the student's question using ONLY the provided document excerpts below. "
                     "Always cite your sources inline using [Source: \"Document Title\", Page X] format corresponding to the excerpts. "
                     "If the answer cannot be found in or deduced from the provided excerpts, clearly state: "
@@ -118,7 +118,7 @@ class AIService:
 
         # Deterministic summary fallback
         return (
-            f"### 📚 Study Summary: {doc_title}\n\n"
+            f"### 📚 Cogniva AI Study Guide: {doc_title}\n\n"
             f"**Overview:**\n"
             f"This material spans {len(pages)} pages covering foundational concepts and core principles in {doc_title}.\n\n"
             f"**Key Focus Areas Extracted:**\n"

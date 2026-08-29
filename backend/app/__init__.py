@@ -1,1 +1,1 @@
-"""StudyPilot Backend Application Package."""
+"""Cogniva AI Backend Application Package."""

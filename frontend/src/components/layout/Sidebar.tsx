@@ -7,8 +7,7 @@ import {
   HelpCircle,
   TrendingUp,
   LogOut,
-  Sparkles,
-  BookOpen
+  BrainCircuit
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -25,11 +24,11 @@ export const Sidebar: React.FC = () => {
   };
 
   const navItems = [
-    { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/documents', label: 'Documents', icon: FileText },
-    { to: '/chat', label: 'AI Study Chat', icon: MessageSquare },
-    { to: '/quizzes', label: 'Quiz Center', icon: HelpCircle },
-    { to: '/progress', label: 'Progress & Mastery', icon: TrendingUp },
+    { to: '/dashboard', label: 'Workspace', icon: LayoutDashboard },
+    { to: '/documents', label: 'Study Material', icon: FileText },
+    { to: '/chat', label: 'Ask Cogniva AI', icon: MessageSquare },
+    { to: '/quizzes', label: 'Cogniva Quiz', icon: HelpCircle },
+    { to: '/progress', label: 'Learning Insights', icon: TrendingUp },
   ];
 
   return (
@@ -37,20 +36,20 @@ export const Sidebar: React.FC = () => {
       {/* Brand Header */}
       <div className="p-6 flex items-center gap-3 border-b border-slate-800/60">
         <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center shadow-lg shadow-brand-500/25">
-          <Sparkles className="w-5 h-5 text-white" />
+          <BrainCircuit className="w-5 h-5 text-white" />
         </div>
         <div>
           <div className="font-bold text-base tracking-tight text-white flex items-center gap-1.5">
-            StudyPilot
+            Cogniva <span className="text-brand-400 text-[10px] px-1 py-0.2 rounded bg-brand-500/10 border border-brand-500/20 font-mono">AI</span>
           </div>
-          <div className="text-[11px] text-slate-400 font-medium">AI Study Copilot</div>
+          <div className="text-[11px] text-slate-400 font-medium">Learning Companion</div>
         </div>
       </div>
 
       {/* Navigation Links */}
       <nav className="flex-1 px-3 py-6 space-y-1.5 overflow-y-auto">
         <div className="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">
-          Study Workspace
+          Learning Workspace
         </div>
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -78,7 +77,7 @@ export const Sidebar: React.FC = () => {
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2.5 min-w-0">
             <div className="w-8 h-8 rounded-full bg-brand-500/20 border border-brand-500/30 flex items-center justify-center text-brand-300 font-bold text-xs">
-              {user?.email?.charAt(0).toUpperCase() || 'S'}
+              {user?.email?.charAt(0).toUpperCase() || 'C'}
             </div>
             <div className="min-w-0">
               <div className="text-xs font-semibold text-slate-200 truncate">

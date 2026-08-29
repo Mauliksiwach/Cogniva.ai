@@ -1,24 +1,24 @@
-# StudyPilot — AI Study Copilot 🚀
+# Cogniva AI
 
-> **Production-Quality Full-Stack AI Learning Assistant for University Students**
+> **Your AI-Powered Learning Companion**
 >
-> Grounded document question answering, smart summarization, interactive quiz generation, and mastery tracking powered by FastAPI, React, Supabase, and Google Gemini AI.
+> Cogniva AI is an intelligent learning platform that transforms a student's study material into an interactive learning experience. Students can upload study materials, ask questions with grounded citations, generate active-recall quizzes, and track learning progress.
 
 ---
 
 ## 📖 Overview
 
-**StudyPilot** is an AI-powered study copilot designed for university students to master course materials. Students upload textbooks, lecture slides, and notes (PDFs), and StudyPilot transforms them into an interactive study workspace:
+**Cogniva AI** helps university students understand, practice, and master complex academic coursework:
 
-- **Grounded Document Q&A (RAG)**: Ask complex questions and get accurate answers strictly cited to specific pages and sections.
-- **Smart Summarization**: Generate structured revision guides, cheatsheets, and key concept takeaways.
-- **AI Quiz Generator**: Generate multiple-choice quizzes with custom difficulty and question count directly from course materials.
-- **Interactive Quiz Experience**: Take timed quizzes with instant feedback, explanations, and topic tagging.
-- **Progress & Mastery Tracking**: Monitor average scores, track attempts over time, and identify weak topics needing review.
+- **Ask Cogniva AI (Grounded Q&A)**: Ask questions across single or multiple course documents and receive answers strictly cited to specific pages and paragraph excerpts.
+- **Smart Study Summaries**: Synthesize comprehensive revision guides, key concept definitions, and high-yield notes.
+- **Cogniva Quiz Generator**: Create custom multiple-choice quizzes (5, 10, or 20 questions) tailored by difficulty (Easy, Medium, Hard).
+- **Interactive Quiz Runner**: Active recall assessments with instant scoring, timer, and detailed pedagogical explanations.
+- **Learning Insights & Mastery Tracking**: Monitor performance over time and automatically pinpoint topics that need review.
 
 ---
 
-## 🏗️ Architecture
+## 🏗️ System Architecture
 
 ```
                                ┌────────────────────────┐
@@ -45,16 +45,17 @@
 ## 🛠️ Tech Stack
 
 ### Frontend
-- **Framework**: React with TypeScript
+- **Framework**: React 18 with TypeScript
 - **Bundler**: Vite
 - **Styling**: Tailwind CSS & Lucide Icons
 - **Routing**: React Router v6
-- **Auth & Storage**: `@supabase/supabase-js`
+- **Auth & Storage Client**: `@supabase/supabase-js`
 
 ### Backend
 - **Framework**: Python 3.12 + FastAPI
 - **Validation**: Pydantic v2 & Pydantic-Settings
 - **Document Processing**: `pypdf` with sliding-window chunking
+- **Retrieval Engine**: BM25 & term-frequency saturation ranker
 - **AI Engine**: Google Gemini API (`google-genai`)
 - **Database Client**: `supabase-py` & PostgreSQL
 - **Testing**: `pytest` & `httpx`
@@ -62,7 +63,7 @@
 ### Database & Security
 - **Database**: PostgreSQL on Supabase
 - **Security**: Row Level Security (RLS) policies on all tables
-- **Multi-Tenancy**: Strict tenant isolation on `user_id`
+- **Tenant Isolation**: Cryptographic JWT validation enforcing `user_id` boundaries
 
 ---
 
@@ -71,19 +72,16 @@
 ### Prerequisites
 - **Node.js**: v18+ (v20+ recommended)
 - **Python**: v3.11+ (v3.12 recommended)
-- **Supabase Account**: [supabase.com](https://supabase.com)
+- **Supabase Project**: [supabase.com](https://supabase.com)
 - **Google Gemini API Key**: [aistudio.google.com](https://aistudio.google.com)
 
 ---
 
 ### 1. Database Setup (Supabase)
 
-1. Create a new project on [Supabase](https://supabase.com).
-2. Navigate to **SQL Editor** in your Supabase dashboard.
-3. Run the scripts in order:
-   - Run `database/schema.sql` to create all tables and indexes.
-   - Run `database/rls_policies.sql` to enforce Row Level Security.
-   - *(Optional)* Run `database/seed.sql` for sample data.
+1. Create a project on [Supabase](https://supabase.com).
+2. Run `database/schema.sql` to initialize tables and indexes.
+3. Run `database/rls_policies.sql` to enforce Row Level Security.
 4. Retrieve your **Project URL**, **Anon Key**, and **JWT Secret** from **Project Settings > API**.
 
 ---
@@ -91,59 +89,51 @@
 ### 2. Backend Setup
 
 ```bash
-# Navigate to backend directory
 cd backend
 
-# Create and activate virtual environment
+# Create virtual environment
 python -m venv .venv
-# On Windows:
-.venv\Scripts\activate
-# On macOS/Linux:
-source .venv/bin/activate
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
 
-# Create environment configuration
+# Configure environment
 cp .env.example .env
-# Edit .env with your Supabase and Gemini credentials
 
-# Run backend development server
-uvicorn main:app --reload --port 8000
+# Run development server
+python -m uvicorn main:app --reload --port 8000
 ```
 
-Backend API will be accessible at: `http://localhost:8000`  
-Swagger Interactive API Documentation: `http://localhost:8000/docs`
+- API Base URL: `http://localhost:8000`
+- Swagger Interactive Documentation: `http://localhost:8000/docs`
 
 ---
 
 ### 3. Frontend Setup
 
 ```bash
-# Navigate to frontend directory
 cd frontend
 
 # Install dependencies
 npm install
 
-# Create environment configuration
+# Configure environment
 cp .env.example .env
-# Edit .env with your Supabase URL and Anon Key
 
-# Run frontend development server
+# Run development server
 npm run dev
 ```
 
-Frontend application will be accessible at: `http://localhost:5173`
+- Frontend Web App: `http://localhost:5173`
 
 ---
 
 ## 🧪 Testing
 
 ```bash
-# Run backend test suite
 cd backend
-pytest -v
+python -m pytest -v
 ```
 
 ---
@@ -152,13 +142,12 @@ pytest -v
 
 ```
 studypilot/
-├── README.md               # Project documentation
-├── .gitignore              # Git ignore configuration
-├── .env.example            # Environment variables template
+├── README.md               # Cogniva AI Documentation
+├── .gitignore              # Git ignore rules
+├── .env.example            # Root environment template
 ├── database/
-│   ├── schema.sql          # Relational PostgreSQL DDL
-│   ├── rls_policies.sql    # Row-Level Security policies
-│   └── seed.sql            # Seed demo data
+│   ├── schema.sql          # PostgreSQL DDL & triggers
+│   └── rls_policies.sql    # Row-Level Security policies
 ├── backend/
 │   ├── .env.example        # Backend environment template
 │   ├── requirements.txt    # Python dependencies
@@ -167,7 +156,7 @@ studypilot/
 │   │   ├── config.py       # Pydantic settings configuration
 │   │   ├── core/           # Auth, DB client, Exception handlers
 │   │   ├── models/         # Pydantic data schemas
-│   │   ├── services/       # Document, Chunking, AI, Quiz, Analytics
+│   │   ├── services/       # Document, Chunking, Retrieval, AI, Quiz
 │   │   └── api/v1/         # Versioned REST API endpoints
 │   └── tests/              # Pytest test suite
 └── frontend/
@@ -186,8 +175,8 @@ studypilot/
 
 ## 🔒 Security Best Practices
 
-- **Zero Client Secrets**: All external AI calls, document storage tokens, and processing operations happen on the backend.
-- **JWT Authentication**: All protected REST endpoints cryptographically verify Supabase JWT tokens.
+- **Zero Client Secrets**: All external AI calls, document storage tokens, and processing operations occur exclusively on the backend.
+- **JWT Authentication**: Protected REST endpoints cryptographically verify Supabase JWT tokens.
 - **Row Level Security**: PostgreSQL enforces tenant isolation directly at the database engine layer.
 - **Input Sanitization & Upload Constraints**: Uploads are restricted by MIME type (`application/pdf`) and maximum size (20MB default).
 

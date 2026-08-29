@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Sparkles, Mail, Lock, ArrowRight, Zap } from 'lucide-react';
+import { BrainCircuit, Mail, Lock, ArrowRight, Zap } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { Button } from '../components/common/Button';
@@ -26,7 +26,7 @@ export const LoginPage: React.FC = () => {
     setLoading(false);
 
     if (result.success) {
-      showToast('success', 'Welcome Back!', 'Logged in successfully.');
+      showToast('success', 'Welcome Back!', 'Logged in to Cogniva AI.');
       navigate('/dashboard');
     } else {
       showToast('error', 'Login Failed', result.error || 'Invalid credentials.');
@@ -35,7 +35,7 @@ export const LoginPage: React.FC = () => {
 
   const handleQuickDemo = async () => {
     setLoading(true);
-    await signIn('student.demo@studypilot.edu', 'demo123456');
+    await signIn('student.demo@cogniva.ai', 'demo123456');
     setLoading(false);
     showToast('success', 'Demo Mode Activated', 'Logged in as Demo Student.');
     navigate('/dashboard');
@@ -47,11 +47,13 @@ export const LoginPage: React.FC = () => {
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center relative z-10">
         <Link to="/" className="inline-flex items-center gap-2.5 mb-6">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center shadow-lg shadow-brand-500/25">
-            <Sparkles className="w-5 h-5 text-white" />
+            <BrainCircuit className="w-5 h-5 text-white" />
           </div>
-          <span className="font-bold text-2xl tracking-tight text-white">StudyPilot</span>
+          <span className="font-bold text-2xl tracking-tight text-white flex items-center gap-1.5">
+            Cogniva <span className="text-brand-400 text-xs px-1.5 py-0.5 rounded-md bg-brand-500/10 border border-brand-500/20 font-mono">AI</span>
+          </span>
         </Link>
-        <h2 className="text-2xl sm:text-3xl font-extrabold text-white">Sign in to your account</h2>
+        <h2 className="text-2xl sm:text-3xl font-extrabold text-white">Sign in to Cogniva AI</h2>
         <p className="mt-2 text-sm text-slate-400">
           Or <Link to="/signup" className="font-medium text-brand-400 hover:text-brand-300">create a new student account</Link>
         </p>

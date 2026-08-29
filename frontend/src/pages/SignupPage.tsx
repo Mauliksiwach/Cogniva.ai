@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Sparkles, Mail, Lock, User as UserIcon, ArrowRight } from 'lucide-react';
+import { BrainCircuit, Mail, Lock, User as UserIcon, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { Button } from '../components/common/Button';
@@ -27,7 +27,7 @@ export const SignupPage: React.FC = () => {
     setLoading(false);
 
     if (result.success) {
-      showToast('success', 'Account Created!', 'Welcome to StudyPilot.');
+      showToast('success', 'Account Created!', 'Welcome to Cogniva AI.');
       navigate('/dashboard');
     } else {
       showToast('error', 'Signup Failed', result.error || 'Failed to create account.');
@@ -40,11 +40,13 @@ export const SignupPage: React.FC = () => {
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center relative z-10">
         <Link to="/" className="inline-flex items-center gap-2.5 mb-6">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center shadow-lg shadow-brand-500/25">
-            <Sparkles className="w-5 h-5 text-white" />
+            <BrainCircuit className="w-5 h-5 text-white" />
           </div>
-          <span className="font-bold text-2xl tracking-tight text-white">StudyPilot</span>
+          <span className="font-bold text-2xl tracking-tight text-white flex items-center gap-1.5">
+            Cogniva <span className="text-brand-400 text-xs px-1.5 py-0.5 rounded-md bg-brand-500/10 border border-brand-500/20 font-mono">AI</span>
+          </span>
         </Link>
-        <h2 className="text-2xl sm:text-3xl font-extrabold text-white">Create your student account</h2>
+        <h2 className="text-2xl sm:text-3xl font-extrabold text-white">Create your Cogniva AI account</h2>
         <p className="mt-2 text-sm text-slate-400">
           Already have an account? <Link to="/login" className="font-medium text-brand-400 hover:text-brand-300">Sign in here</Link>
         </p>
@@ -80,7 +82,7 @@ export const SignupPage: React.FC = () => {
               required
             />
             <Button type="submit" loading={loading} icon={<ArrowRight className="w-4 h-4" />} className="w-full">
-              Get Started Free
+              Start Learning Free
             </Button>
           </form>
         </Card>

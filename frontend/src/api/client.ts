@@ -9,7 +9,7 @@ export async function apiRequest<T>(
 ): Promise<ApiResponse<T>> {
   try {
     const session = (await supabase.auth.getSession()).data.session;
-    const token = session?.access_token || localStorage.getItem('studypilot_dev_token');
+    const token = session?.access_token || localStorage.getItem('cogniva_token') || localStorage.getItem('studypilot_dev_token');
 
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -45,7 +45,7 @@ export async function apiRequest<T>(
       message: err?.message || 'Network connection failed',
       error: {
         code: 'NETWORK_ERROR',
-        message: err?.message || 'Failed to reach StudyPilot API server',
+        message: err?.message || 'Failed to reach Cogniva AI server',
       },
     };
   }

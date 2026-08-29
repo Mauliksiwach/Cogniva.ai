@@ -1,1 +1,1 @@
--- StudyPilot seed data placeholder
+-- Cogniva AI seed data placeholder

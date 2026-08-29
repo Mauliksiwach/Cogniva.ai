@@ -11,7 +11,7 @@ export const ProtectedRoute: React.FC = () => {
       <div className="min-h-screen flex items-center justify-center bg-slate-950">
         <div className="flex flex-col items-center gap-3">
           <Loader2 className="w-8 h-8 text-brand-500 animate-spin" />
-          <p className="text-sm text-slate-400 font-medium">Loading StudyPilot session...</p>
+          <p className="text-sm text-slate-400 font-medium">Loading Cogniva AI workspace...</p>
         </div>
       </div>
     );

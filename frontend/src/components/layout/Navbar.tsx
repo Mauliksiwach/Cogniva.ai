@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles, ArrowRight } from 'lucide-react';
+import { Sparkles, ArrowRight, BrainCircuit } from 'lucide-react';
 import { Button } from '../common/Button';
 import { useAuth } from '../../context/AuthContext';
 
@@ -12,11 +12,13 @@ export const Navbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2.5">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center shadow-lg shadow-brand-500/25">
-            <Sparkles className="w-5 h-5 text-white" />
+            <BrainCircuit className="w-5 h-5 text-white" />
           </div>
           <div className="flex flex-col">
-            <span className="font-bold text-lg tracking-tight text-white">StudyPilot</span>
-            <span className="text-[10px] text-brand-400 -mt-1 font-medium">AI Study Copilot</span>
+            <span className="font-bold text-lg tracking-tight text-white flex items-center gap-1.5">
+              Cogniva <span className="text-brand-400 text-xs px-1.5 py-0.5 rounded-md bg-brand-500/10 border border-brand-500/20 font-mono">AI</span>
+            </span>
+            <span className="text-[10px] text-slate-400 -mt-1 font-medium">Learning Companion</span>
           </div>
         </Link>
 
@@ -30,7 +32,7 @@ export const Navbar: React.FC = () => {
           {user ? (
             <Link to="/dashboard">
               <Button size="sm" icon={<ArrowRight className="w-4 h-4" />}>
-                Go to Dashboard
+                Go to Workspace
               </Button>
             </Link>
           ) : (
@@ -42,7 +44,7 @@ export const Navbar: React.FC = () => {
               </Link>
               <Link to="/signup">
                 <Button size="sm" icon={<Sparkles className="w-3.5 h-3.5" />}>
-                  Get Started
+                  Start Learning
                 </Button>
               </Link>
             </>
