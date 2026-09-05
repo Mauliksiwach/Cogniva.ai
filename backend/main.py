@@ -6,6 +6,9 @@ from fastapi.exceptions import RequestValidationError
 from app.config import settings
 from app.core.exceptions import AppException, app_exception_handler, validation_exception_handler, global_exception_handler
 from app.api.v1.router import api_v1_router
+from app.core.security_middleware import limiter, SecurityHeadersMiddleware
+from slowapi import _rate_limit_exceeded_handler
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -30,6 +33,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Security Middleware
+app.state.limiter = limiter
+app.add_exception_handler(429, _rate_limit_exceeded_handler)
+app.middleware("http")(SecurityHeadersMiddleware)
 
 # Exception Handlers
 app.add_exception_handler(AppException, app_exception_handler)
