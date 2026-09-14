@@ -60,6 +60,8 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     )
 
 async def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    import traceback
+    traceback.print_exc()
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content={
@@ -67,7 +69,7 @@ async def global_exception_handler(request: Request, exc: Exception) -> JSONResp
             "error": {
                 "code": "INTERNAL_SERVER_ERROR",
                 "message": "An unexpected internal server error occurred",
-                "details": str(exc) if request.app.debug else None
+                "details": str(exc)
             }
         }
     )
