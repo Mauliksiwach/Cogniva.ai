@@ -13,6 +13,7 @@ import { DocumentsPage } from './pages/DocumentsPage';
 import { ChatPage } from './pages/ChatPage';
 import { QuizzesPage } from './pages/QuizzesPage';
 import { ProgressPage } from './pages/ProgressPage';
+import { AiTutorPage } from './pages/AiTutorPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 export const App: React.FC = () => {
@@ -28,6 +29,7 @@ export const App: React.FC = () => {
             <Route element={<ProtectedRoute />}>
               <Route element={<AppLayout />}>
                 <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/ai-tutor" element={<AiTutorPage />} />
                 <Route path="/documents" element={<DocumentsPage />} />
                 <Route path="/chat" element={<ChatPage />} />
                 <Route path="/quizzes" element={<QuizzesPage />} />

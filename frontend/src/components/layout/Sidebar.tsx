@@ -7,7 +7,8 @@ import {
   HelpCircle,
   TrendingUp,
   LogOut,
-  BrainCircuit
+  BrainCircuit,
+  Sparkles
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -25,6 +26,7 @@ export const Sidebar: React.FC = () => {
 
   const navItems = [
     { to: '/dashboard', label: 'Workspace', icon: LayoutDashboard },
+    { to: '/ai-tutor', label: 'AI Tutor (Prof. Spark)', icon: Sparkles },
     { to: '/documents', label: 'Study Material', icon: FileText },
     { to: '/chat', label: 'Ask Cogniva AI', icon: MessageSquare },
     { to: '/quizzes', label: 'Cogniva Quiz', icon: HelpCircle },

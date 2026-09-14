@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   UploadCloud,
@@ -194,8 +194,14 @@ export const DocumentsPage: React.FC = () => {
 
       {/* Documents Grid / List */}
       {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <Skeleton className="h-48 rounded-2xl" count={3} />
+        <div className="flex flex-col items-center justify-center py-20 space-y-4 bg-slate-900/30 rounded-3xl border border-slate-800/60">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-brand-600/20 to-indigo-500/20 border border-brand-500/30 flex items-center justify-center text-brand-400 shadow-lg shadow-brand-500/10 animate-pulse">
+            <Layers className="w-7 h-7 animate-bounce" />
+          </div>
+          <div className="text-center space-y-1">
+            <h4 className="text-base font-semibold text-slate-200">Retrieving Study Materials...</h4>
+            <p className="text-xs text-slate-500 font-mono">Fetching indexed documents from Cogniva vault</p>
+          </div>
         </div>
       ) : filteredDocs.length === 0 ? (
         <Card className="p-12 text-center border-dashed">

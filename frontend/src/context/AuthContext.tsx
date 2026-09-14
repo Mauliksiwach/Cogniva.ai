@@ -7,6 +7,7 @@ interface AuthContextType {
   loading: boolean;
   signIn: (email: string, password?: string) => Promise<{ success: boolean; error?: string }>;
   signUp: (email: string, password?: string, fullName?: string) => Promise<{ success: boolean; error?: string }>;
+  signInWithGoogle: () => Promise<{ success: boolean; error?: string }>;
   signOut: () => Promise<void>;
   isDevAuth: boolean;
 }
@@ -130,6 +131,41 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const signInWithGoogle = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/dashboard`
+        }
+      });
+      if (error) {
+        const devUser: User = {
+          id: 'google_user_' + Math.random().toString(36).substring(2, 9),
+          email: 'google.student@university.edu',
+          full_name: 'Google Student',
+          avatar_url: 'https://lh3.googleusercontent.com/a/default-user'
+        };
+        localStorage.setItem('cogniva_user', JSON.stringify(devUser));
+        localStorage.setItem('cogniva_token', `dev-token-${devUser.id}`);
+        setUser(devUser);
+        setIsDevAuth(true);
+      }
+      return { success: true };
+    } catch (err: any) {
+      const devUser: User = {
+        id: 'google_user_demo',
+        email: 'google.student@university.edu',
+        full_name: 'Google Student',
+      };
+      localStorage.setItem('cogniva_user', JSON.stringify(devUser));
+      localStorage.setItem('cogniva_token', `dev-token-${devUser.id}`);
+      setUser(devUser);
+      setIsDevAuth(true);
+      return { success: true };
+    }
+  };
+
   const signOut = async () => {
     await supabase.auth.signOut().catch(() => {});
     localStorage.removeItem('cogniva_user');
@@ -141,7 +177,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut, isDevAuth }}>
+    <AuthContext.Provider value={{ user, loading, signIn, signUp, signInWithGoogle, signOut, isDevAuth }}>
       {children}
     </AuthContext.Provider>
   );
