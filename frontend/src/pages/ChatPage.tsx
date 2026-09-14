@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Sparkles,
@@ -145,11 +145,13 @@ export const ChatPage: React.FC = () => {
         setCurrentConversationId(assistantMsg.conversation_id);
       }
       setMessages((prev) => [...prev, assistantMsg]);
-      // Refresh conversations list
-      listConversationsApi().then((r) => r.data && setConversations(r.data));
+      // Refresh conversations list (fire-and-forget, ignore errors)
+      listConversationsApi().then((r) => r.data && setConversations(r.data)).catch(() => {});
     } else {
-      showToast('error', 'Query Failed', res.message || 'Failed to get answer.');
+      // This branch only hit for unexpected non-network errors
+      showToast('error', 'Query Failed', res.message || 'Could not process your question. Please try again.');
     }
+
   };
 
   const handleSummarizeDoc = async () => {

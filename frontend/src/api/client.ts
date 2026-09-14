@@ -1,7 +1,21 @@
 import { supabase } from '../utils/supabase';
 import { ApiResponse } from '../types';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://cogniva-ai.onrender.com/api/v1';
+
+let backendWakeupAttempted = false;
+
+/** Silently ping the backend to wake it from Render's free-tier sleep */
+export async function wakeupBackend(): Promise<void> {
+  if (backendWakeupAttempted) return;
+  backendWakeupAttempted = true;
+  try {
+    await fetch(`${API_BASE}/health`, { method: 'GET', signal: AbortSignal.timeout(8000) });
+    console.log('✅ Cogniva backend is online');
+  } catch {
+    console.info('ℹ️ Backend waking up (Render free tier). Features will fall back to offline mode until it warms up.');
+  }
+}
 
 export async function apiRequest<T>(
   endpoint: string,

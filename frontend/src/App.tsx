@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
@@ -15,9 +15,16 @@ import { QuizzesPage } from './pages/QuizzesPage';
 import { ProgressPage } from './pages/ProgressPage';
 import { AiTutorPage } from './pages/AiTutorPage';
 import { NotFoundPage } from './pages/NotFoundPage';
+import { wakeupBackend } from './api/client';
 
 export const App: React.FC = () => {
+  // Silently wake up Render backend on app load (free-tier cold start prevention)
+  useEffect(() => {
+    wakeupBackend();
+  }, []);
+
   return (
+
     <BrowserRouter>
       <ToastProvider>
         <AuthProvider>
