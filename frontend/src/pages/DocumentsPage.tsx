@@ -70,9 +70,12 @@ export const DocumentsPage: React.FC = () => {
     fetchDocuments();
   }, []);
 
+  const ALLOWED_EXTS = ['.pdf', '.doc', '.docx', '.ppt', '.pptx', '.txt', '.md'];
+
   const handleFileSelect = (file: File) => {
-    if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
-      showToast('error', 'Invalid File Type', 'Please select a PDF document (.pdf).');
+    const ext = '.' + (file.name.split('.').pop()?.toLowerCase() || '');
+    if (!ALLOWED_EXTS.includes(ext)) {
+      showToast('error', 'Invalid File Type', 'Supported formats: PDF, Word (.doc/.docx), PowerPoint (.ppt/.pptx), Text (.txt), and Markdown (.md).');
       return;
     }
     if (file.size > 20 * 1024 * 1024) {
@@ -320,7 +323,7 @@ export const DocumentsPage: React.FC = () => {
       <Modal
         isOpen={isUploadOpen}
         onClose={() => !uploading && setIsUploadOpen(false)}
-        title="Upload Study Material (PDF)"
+        title="Upload Study Material (PDF, Word, PPT, Text)"
         maxWidth="lg"
       >
         <form onSubmit={handleUploadSubmit} className="space-y-5">
@@ -341,7 +344,7 @@ export const DocumentsPage: React.FC = () => {
             <input
               ref={fileInputRef}
               type="file"
-              accept=".pdf,application/pdf"
+              accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.md"
               className="hidden"
               onChange={(e) => {
                 if (e.target.files && e.target.files[0]) {
@@ -356,7 +359,7 @@ export const DocumentsPage: React.FC = () => {
                   <File className="w-6 h-6" />
                 </div>
                 <span className="font-semibold text-sm text-slate-100">{selectedFile.name}</span>
-                <span className="text-xs text-slate-400 mt-1">{formatBytes(selectedFile.size)} • PDF Document</span>
+                <span className="text-xs text-slate-400 mt-1">{formatBytes(selectedFile.size)} • Study File</span>
                 <span className="text-xs text-brand-400 mt-2 font-medium">Click to choose a different file</span>
               </div>
             ) : (
@@ -365,9 +368,9 @@ export const DocumentsPage: React.FC = () => {
                   <UploadCloud className="w-6 h-6" />
                 </div>
                 <span className="font-semibold text-sm text-slate-200">
-                  Drag and drop your PDF here, or <span className="text-brand-400 underline">browse</span>
+                  Drag & drop your file here, or <span className="text-brand-400 underline">browse</span>
                 </span>
-                <span className="text-xs text-slate-500 mt-1">Supports PDF textbooks, notes, and slides up to 20MB</span>
+                <span className="text-xs text-slate-500 mt-1">Supports PDF, Word (.doc/.docx), PowerPoint (.ppt/.pptx), Text (.txt), and Markdown (.md) up to 20MB</span>
               </div>
             )}
           </div>

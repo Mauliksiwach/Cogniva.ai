@@ -1,8 +1,8 @@
-﻿from typing import List, Optional
+from typing import List, Optional
 from fastapi import APIRouter, Depends, UploadFile, File, Form, status
 from app.core.auth import get_current_user
 from app.core.exceptions import BadRequestException
-from app.core.security import is_valid_pdf, sanitize_filename
+from app.core.security import is_valid_document, sanitize_filename
 from app.models.schemas import APIResponse, AuthenticatedUser
 from app.services.document_service import document_service
 
@@ -18,12 +18,12 @@ async def upload_document(
         raise BadRequestException("Missing uploaded filename.")
 
     clean_filename = sanitize_filename(file.filename)
-    if not is_valid_pdf(clean_filename, file.content_type):
-        raise BadRequestException("Invalid file format. Only PDF (.pdf) documents are supported.")
+    if not is_valid_document(clean_filename, file.content_type):
+        raise BadRequestException("Invalid file format. Supported formats: PDF (.pdf), Word (.doc/.docx), PowerPoint (.ppt/.pptx), Text (.txt), and Markdown (.md).")
 
     file_bytes = await file.read()
     if len(file_bytes) == 0:
-        raise BadRequestException("Uploaded PDF file is empty (0 bytes).")
+        raise BadRequestException("Uploaded document file is empty (0 bytes).")
 
     doc = await document_service.save_and_process_document(
         user_id=current_user.id,
