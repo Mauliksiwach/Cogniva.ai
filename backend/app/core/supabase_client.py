@@ -8,11 +8,11 @@ from supabase import create_client, Client
 # The client is created once at import time and can be imported wherever needed.
 
 _SUPABASE_URL = os.getenv("SUPABASE_URL")
-_SUPABASE_SERVICE_KEY = os.getenv("SUPABASE_SERVICE_KEY")
+_SUPABASE_SERVICE_KEY = os.getenv("SUPABASE_SERVICE_KEY") or os.getenv("SUPABASE_KEY")
 
 if not _SUPABASE_URL or not _SUPABASE_SERVICE_KEY:
     raise RuntimeError(
-        "Supabase configuration missing. Please set SUPABASE_URL and SUPABASE_SERVICE_KEY in the environment."
+        "Supabase configuration missing. Please set SUPABASE_URL and SUPABASE_SERVICE_KEY (or SUPABASE_KEY) in Environment Variables."
     )
 
 client: Client = create_client(_SUPABASE_URL, _SUPABASE_SERVICE_KEY)
