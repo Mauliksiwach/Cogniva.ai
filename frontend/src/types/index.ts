@@ -11,6 +11,7 @@ export interface Document {
   user_id: string;
   title: string;
   file_name: string;
+  file_path?: string;
   file_size: number;
   file_type: string;
   page_count: number;
