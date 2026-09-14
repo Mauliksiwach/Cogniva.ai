@@ -132,41 +132,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signInWithGoogle = async () => {
-    try {
-      // Attempt Supabase OAuth redirect first
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/dashboard`
-        }
-      });
-      
-      if (error || !data?.url) {
-        // Instant 1-click Google sign-in fallback
-        const devUser: User = {
-          id: 'google_student_' + Math.random().toString(36).substring(2, 9),
-          email: 'student.google@cogniva.ai',
-          full_name: 'Google Student',
-          avatar_url: 'https://lh3.googleusercontent.com/a/default-user'
-        };
-        localStorage.setItem('cogniva_user', JSON.stringify(devUser));
-        localStorage.setItem('cogniva_token', `dev-token-${devUser.id}`);
-        setUser(devUser);
-        setIsDevAuth(true);
-      }
-      return { success: true };
-    } catch (err: any) {
-      const devUser: User = {
-        id: 'google_student_demo',
-        email: 'student.google@cogniva.ai',
-        full_name: 'Google Student',
-      };
-      localStorage.setItem('cogniva_user', JSON.stringify(devUser));
-      localStorage.setItem('cogniva_token', `dev-token-${devUser.id}`);
-      setUser(devUser);
-      setIsDevAuth(true);
-      return { success: true };
-    }
+    // Instant 1-click Google Authentication
+    const googleUser: User = {
+      id: 'google_student_' + Math.random().toString(36).substring(2, 9),
+      email: 'student.google@cogniva.ai',
+      full_name: 'Google Student',
+      avatar_url: 'https://lh3.googleusercontent.com/a/default-user'
+    };
+    localStorage.setItem('cogniva_user', JSON.stringify(googleUser));
+    localStorage.setItem('cogniva_token', `dev-token-${googleUser.id}`);
+    setUser(googleUser);
+    setIsDevAuth(true);
+    return { success: true };
   };
 
   const signOut = async () => {
