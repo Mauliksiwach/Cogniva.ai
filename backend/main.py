@@ -37,7 +37,7 @@ app.add_middleware(
 # Security Middleware
 app.state.limiter = limiter
 app.add_exception_handler(429, _rate_limit_exceeded_handler)
-app.middleware("http")(SecurityHeadersMiddleware)
+app.add_middleware(SecurityHeadersMiddleware)
 
 # Exception Handlers
 app.add_exception_handler(AppException, app_exception_handler)
