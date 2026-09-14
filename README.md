@@ -4,6 +4,13 @@
 >
 > Cogniva AI is an intelligent learning platform that transforms a student's study material into an interactive learning experience. Students can upload study materials, ask questions with grounded citations, generate active-recall quizzes, and track learning progress.
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Render-brightgreen)](https://cogniva-ai.onrender.com)
+[![CI Status](https://github.com/Mauliksiwach/Cogniva.ai/actions/workflows/ci.yml/badge.svg)](https://github.com/Mauliksiwach/Cogniva.ai/actions)
+
+### 🌐 Live Public API URL
+- **Production Endpoint:** [https://cogniva-ai.onrender.com](https://cogniva-ai.onrender.com)
+- **API Documentation (Swagger UI):** [https://cogniva-ai.onrender.com/docs](https://cogniva-ai.onrender.com/docs)
+
 ---
 
 ## 📖 Overview
