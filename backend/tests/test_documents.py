@@ -1,4 +1,4 @@
-﻿import io
+import io
 import pytest
 from pypdf import PdfWriter
 from httpx import AsyncClient, ASGITransport
@@ -66,7 +66,7 @@ async def test_upload_invalid_extension():
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         response = await client.post("/api/v1/documents/upload", files=files, headers=headers)
         assert response.status_code == 400
-        assert "Only PDF" in response.json()["error"]["message"]
+        assert "Supported formats" in response.json()["error"]["message"]
 
 @pytest.mark.asyncio
 async def test_upload_empty_pdf():

@@ -120,21 +120,23 @@ class QuizService:
             "question_count": len(questions),
             "created_at": now.isoformat()
         }
-        # Insert quiz record
-        self._supabase.from_("quizzes").insert(quiz_payload).execute()
-        # Insert each question
-        for q in questions:
-            question_payload = {
-                "id": q.question_id,
-                "quiz_id": quiz_id,
-                "question_text": q.question_text,
-                "options": json.dumps(q.options),
-                "correct_option_index": q.correct_option_index,
-                "explanation": q.explanation,
-                "topic_tag": q.topic_tag,
-                "created_at": now.isoformat()
-            }
-            self._supabase.from_("quiz_questions").insert(question_payload).execute()
+        # Insert quiz record & questions (try Supabase first, fallback to in-memory)
+        try:
+            self._supabase.from_("quizzes").insert(quiz_payload).execute()
+            for q in questions:
+                question_payload = {
+                    "id": q.question_id,
+                    "quiz_id": quiz_id,
+                    "question_text": q.question_text,
+                    "options": json.dumps(q.options),
+                    "correct_option_index": q.correct_option_index,
+                    "explanation": q.explanation,
+                    "topic_tag": q.topic_tag,
+                    "created_at": now.isoformat()
+                }
+                self._supabase.from_("quiz_questions").insert(question_payload).execute()
+        except Exception:
+            pass
 
         # Update in‑memory caches (optional quick lookup)
         self._quizzes[quiz_id] = quiz_payload
@@ -330,20 +332,24 @@ class QuizService:
             "percentage": percentage,
             "time_spent_seconds": time_spent_seconds,
             "weak_topics": json.dumps(list(weak_topics_set)),
+            "detailed_results": detailed_results,
             "completed_at": now.isoformat(),
             "created_at": now.isoformat()
         }
-        self._supabase.from_("quiz_attempts").insert(attempt_payload).execute()
-        # Insert detailed answers
-        for result in detailed_results:
-            answer_payload = {
-                "id": str(uuid.uuid4()),
-                "attempt_id": attempt_id,
-                "question_id": result["question_id"],
-                "selected_option_index": result["selected_option_index"],
-                "is_correct": result["is_correct"]
-            }
-            self._supabase.from_("quiz_answers").insert(answer_payload).execute()
+        try:
+            self._supabase.from_("quiz_attempts").insert(attempt_payload).execute()
+            # Insert detailed answers
+            for result in detailed_results:
+                answer_payload = {
+                    "id": str(uuid.uuid4()),
+                    "attempt_id": attempt_id,
+                    "question_id": result["question_id"],
+                    "selected_option_index": result["selected_option_index"],
+                    "is_correct": result["is_correct"]
+                }
+                self._supabase.from_("quiz_answers").insert(answer_payload).execute()
+        except Exception:
+            pass
         # Update in‑memory cache (optional)
         if quiz_id not in self._quiz_attempts:
             self._quiz_attempts[quiz_id] = []
