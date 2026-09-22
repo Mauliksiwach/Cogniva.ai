@@ -96,8 +96,22 @@ export const QuizzesPage: React.FC = () => {
       setSelectedOption(null);
       setShowExplanation(false);
     } else {
+      const finalScore = score + (selectedOption === currentQuestion.correctAnswer ? 1 : 0);
       setQuizMode('completed');
-      showToast('success', 'Quiz Completed! 🏆', `Final Score: ${score + (selectedOption === currentQuestion.correctAnswer ? 1 : 0)} / ${SAMPLE_QUIZ.length}`);
+      try {
+        const existing = JSON.parse(localStorage.getItem('cogniva_quiz_attempts') || '[]');
+        const newAttempt = {
+          id: 'attempt_' + Date.now(),
+          quiz_title: `${difficulty} Active Recall Quiz`,
+          score: finalScore,
+          total_questions: SAMPLE_QUIZ.length,
+          percentage: Math.round((finalScore / SAMPLE_QUIZ.length) * 100),
+          difficulty,
+          completed_at: new Date().toISOString()
+        };
+        localStorage.setItem('cogniva_quiz_attempts', JSON.stringify([newAttempt, ...existing]));
+      } catch {}
+      showToast('success', 'Quiz Completed! 🏆', `Final Score: ${finalScore} / ${SAMPLE_QUIZ.length}`);
     }
   };
 
