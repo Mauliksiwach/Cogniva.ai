@@ -7,7 +7,7 @@ interface AuthContextType {
   loading: boolean;
   signIn: (email: string, password?: string) => Promise<{ success: boolean; error?: string }>;
   signUp: (email: string, password?: string, fullName?: string) => Promise<{ success: boolean; error?: string }>;
-  signInWithGoogle: () => Promise<{ success: boolean; error?: string }>;
+  signInWithGoogle: (userEmail?: string, userName?: string) => Promise<{ success: boolean; error?: string }>;
   signOut: () => Promise<void>;
   isDevAuth: boolean;
 }
@@ -131,16 +131,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const signInWithGoogle = async () => {
-    // Instant 1-click Google Authentication
+  const signInWithGoogle = async (userEmail?: string, userName?: string) => {
+    let email = userEmail?.trim();
+    let name = userName?.trim();
+
+    if (!email) {
+      const prompted = window.prompt("Enter your Google / Gmail address to sign in with your account:", "student@gmail.com");
+      if (!prompted || !prompted.trim()) return { success: false, error: 'Email required' };
+      email = prompted.trim();
+    }
+
+    if (!name) {
+      name = email.split('@')[0].replace(/[^a-zA-Z0-9]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+    }
+
     const googleUser: User = {
-      id: 'google_student_' + Math.random().toString(36).substring(2, 9),
-      email: 'student.google@cogniva.ai',
-      full_name: 'Google Student',
-      avatar_url: 'https://lh3.googleusercontent.com/a/default-user'
+      id: 'usr_' + email.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase(),
+      email: email,
+      full_name: name,
+      avatar_url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(email)}`
     };
     localStorage.setItem('cogniva_user', JSON.stringify(googleUser));
-    localStorage.setItem('cogniva_token', `dev-token-${googleUser.id}`);
+    localStorage.setItem('cogniva_token', `token-${googleUser.id}`);
     setUser(googleUser);
     setIsDevAuth(true);
     return { success: true };

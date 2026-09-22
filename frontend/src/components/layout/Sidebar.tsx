@@ -81,11 +81,13 @@ export const Sidebar: React.FC = () => {
             <div className="w-8 h-8 rounded-full bg-brand-500/20 border border-brand-500/30 flex items-center justify-center text-brand-300 font-bold text-xs">
               {user?.email?.charAt(0).toUpperCase() || 'C'}
             </div>
-            <div className="min-w-0">
-              <div className="text-xs font-semibold text-slate-200 truncate">
+            <div className="min-w-0 flex-1">
+              <div className="text-xs font-semibold text-slate-200 truncate" title={user?.full_name || user?.email}>
                 {user?.full_name || user?.email?.split('@')[0]}
               </div>
-              <div className="text-[11px] text-slate-500 truncate">{user?.email}</div>
+              <div className="text-[10px] text-slate-400 font-mono truncate" title={user?.email}>
+                {user?.email}
+              </div>
             </div>
           </div>
           <button

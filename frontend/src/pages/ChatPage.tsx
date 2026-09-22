@@ -35,6 +35,8 @@ import {
 } from '../api/chat';
 import { Document, ChatMessage, CitationSource } from '../types';
 
+import { FormattedText } from '../components/common/FormattedText';
+
 export const ChatPage: React.FC = () => {
   const { user } = useAuth();
   const { showToast } = useToast();
@@ -351,7 +353,7 @@ export const ChatPage: React.FC = () => {
                           : 'bg-slate-900/90 border border-slate-800 text-slate-100 rounded-tl-none'
                       }`}
                     >
-                      <div className="whitespace-pre-wrap font-sans">{msg.content}</div>
+                      <FormattedText content={msg.content} />
 
                       {/* Source Citations for Assistant */}
                       {!isUser && msg.sources && msg.sources.length > 0 && (

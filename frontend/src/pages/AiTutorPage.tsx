@@ -26,6 +26,7 @@ import { Badge } from '../components/common/Badge';
 import { TutorAvatar, AvatarMood } from '../components/tutor/TutorAvatar';
 import { useToast } from '../context/ToastContext';
 import { apiRequest } from '../api/client';
+import { FormattedText } from '../components/common/FormattedText';
 
 interface TutorProfile {
   institute: string;
@@ -667,7 +668,7 @@ export const AiTutorPage: React.FC = () => {
                       <span className="font-semibold">{msg.sender === 'tutor' ? 'Prof. Spark' : 'You'}</span>
                       <span>{msg.timestamp}</span>
                     </div>
-                    <div className="whitespace-pre-wrap font-sans">{msg.text}</div>
+                    <FormattedText content={msg.text} />
 
                     {msg.sender === 'tutor' && (
                       <div className="mt-2 pt-2 border-t border-slate-800/60 flex items-center justify-end gap-2">
