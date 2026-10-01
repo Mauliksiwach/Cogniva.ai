@@ -173,7 +173,6 @@ function generateAcademicTutoring(
   const stream = profile?.stream || 'your stream';
   const tone = profile?.tone || 'funny';
 
-  // Check if query matches specific course codes or known topics
   let matchedCourse: { code: string; data: typeof COURSE_KNOWLEDGE_BASE[string] } | null = null;
   for (const [code, data] of Object.entries(COURSE_KNOWLEDGE_BASE)) {
     if (queryLower.includes(code.toLowerCase()) || queryLower.includes(data.title.toLowerCase())) {
@@ -206,12 +205,12 @@ function generateAcademicTutoring(
     return `😜 **Prof. Spark's Universal Exam Mnemonic Trick!**\n\nFor remembering complex multi-step processes in **${profile?.subjects || 'your course'}** at **${institute}**:\n\nRemember **I-D-E-A-L**:\n• **I** - Identify the core problem & parameters\n• **D** - Define key formulas and equations\n• **E** - Execute the step-by-step calculation\n• **A** - Analyze edge cases and units\n• **L** - Label your final diagram/answer clearly!\n\nAcronyms turn 10 pages of notes into 5 simple letters. Works every time! 💡`;
   }
 
-  // 4. Specific Course Code Query (e.g. CSE202, INT335, MTH401, etc.)
+  // 4. Specific Course Code Query
   if (matchedCourse) {
     return `🎓 **Prof. Spark's Deep Dive into ${matchedCourse.code}: ${matchedCourse.data.title}**\n\nHello from your ${institute} tutor desk! Here is the complete breakdown of **${matchedCourse.data.title}**:\n\n### 📌 Core Syllabus Modules:\n${matchedCourse.data.coreConcepts.map((c, i) => `${i + 1}. **${c}**`).join('\n')}\n\n### 📝 Exam Scoring Strategy for ${institute}:\n• **5-Mark Questions**: Focus on ${matchedCourse.data.pyqHacks[0]}\n• **10-Mark Questions**: Professors routinely set questions like: *"${matchedCourse.data.pyqHacks[1]}"*\n\n### 💡 Memory Trick:\n> *${matchedCourse.data.mnemonics}*\n\nWhat specific sub-topic or code example in ${matchedCourse.code} would you like us to solve together next?`;
   }
 
-  // 5. General Question Handling with tailored academic content
+  // 5. General Question Handling
   return `🎓 **Prof. Spark Tutoring Session** (${institute} • ${stream})\n\nRegarding your question: **"${userQuery}"**\n\nHere is the detailed academic breakdown tailored for **${stream} (${profile?.year})**:\n\n1. **Core Concept & Definition**:\n   When explaining "${userQuery}" in a university exam, start by defining the primary terminology and stating any underlying assumptions.\n\n2. **Key Mechanism / Step-by-Step Analysis**:\n   Break the concept down into logical phases. Use structured bullet points and standard notation used in ${profile?.subjects || 'your curriculum'}.\n\n3. **Practical Example & Application**:\n   Provide a concrete real-world example or code/mathematical formulation. Evaluators at ${institute} love seeing practical applications!\n\n4. **Exam Scoring Tip**:\n   Underline key technical terms and include a neat block diagram or flowchart. This immediately elevates your answer to full-marks quality.\n\nAsk me any follow-up question or click one of the Quick Exam Hacks on the left!`;
 }
 
@@ -249,9 +248,9 @@ export const AiTutorPage: React.FC = () => {
   useEffect(() => {
     if (profile && messages.length === 0) {
       const welcomeText = tone === 'funny'
-        ? `Hey there! Welcome to ${profile.institute} survival headquarters! I'm Prof. Spark, your personal AI tutor for ${profile.stream} (${profile.year}). I have indexed syllabus trends for ${profile.subjects || 'your courses'}! What subject or topic are we conquering today?`
+        ? `Hey there! Welcome to ${profile.institute} headquarters! I'm Prof. Spark, your personal AI tutor for ${profile.stream} (${profile.year}). I have indexed syllabus trends for ${profile.subjects || 'your courses'}! What topic are we mastering today?`
         : `Greetings! I am your AI Tutor tailored specifically for ${profile.institute} - ${profile.stream} (${profile.year}). I have loaded your syllabus (${profile.subjects || 'General Curriculum'}). How can I assist your studies today?`;
-      
+
       setMessages([
         {
           id: 'welcome_1',
@@ -264,24 +263,20 @@ export const AiTutorPage: React.FC = () => {
     }
   }, [profile, tone]);
 
-  /** Sanitize text for clean, natural SpeechSynthesis without pronouncing markdown or raw symbols */
   const sanitizeTextForSpeech = (text: string): string => {
     return text
-      // Remove Markdown headers, bold, italics, code blocks
       .replace(/#{1,6}\s+/g, '')
       .replace(/\*\*(.*?)\*\*/g, '$1')
       .replace(/\*(.*?)\*/g, '$1')
       .replace(/`{1,3}[\s\S]*?`{1,3}/g, '')
       .replace(/^[•\-\*\d+\.]+\s+/gm, '')
       .replace(/\[(.*?)\]\(.*?\)/g, '$1')
-      // Convert colons, dashes, slashes to natural spoken pauses
       .replace(/[:;\-–—]/g, ', ')
       .replace(/[\/\\]/g, ' or ')
       .replace(/\s+/g, ' ')
       .trim();
   };
 
-  /** Natural Web Speech API Text-to-Speech */
   const speakText = (rawText: string) => {
     if (!voiceEnabled || !('speechSynthesis' in window)) return;
 
@@ -290,10 +285,9 @@ export const AiTutorPage: React.FC = () => {
     if (!cleanSpeech) return;
 
     const utterance = new SpeechSynthesisUtterance(cleanSpeech);
-    utterance.rate = 1.05; // Natural human pace
+    utterance.rate = 1.05;
     utterance.pitch = 1.0;
 
-    // Pick a natural English voice if available
     const voices = window.speechSynthesis.getVoices();
     const preferredVoice = voices.find(
       (v) => (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Daniel') || v.name.includes('en-US') || v.name.includes('en-GB')) && !v.name.includes('eSpeak')
@@ -330,8 +324,8 @@ export const AiTutorPage: React.FC = () => {
     localStorage.setItem('cogniva_ai_tutor_profile', JSON.stringify(newProfile));
     setProfile(newProfile);
     setEditingProfile(false);
-    setMessages([]); // reset conversation with new context
-    showToast('success', 'AI Tutor Ready!', `Prof. Spark is configured for ${institute}`);
+    setMessages([]);
+    showToast('success', 'AI Tutor Configured', `Prof. Spark is ready for ${institute}`);
   };
 
   const handleSendMessage = async (e?: React.FormEvent, customMsg?: string) => {
@@ -353,7 +347,6 @@ export const AiTutorPage: React.FC = () => {
     setAvatarMood('thinking');
 
     try {
-      // Try backend query endpoint with abort timeout
       let tutorReply = '';
       try {
         const res = await apiRequest<{ answer: string }>('/chat/query', {
@@ -365,7 +358,6 @@ export const AiTutorPage: React.FC = () => {
         }
       } catch {}
 
-      // If backend call returned empty/failed, use our intelligent academic tutor generator
       if (!tutorReply) {
         tutorReply = generateAcademicTutoring(userText, profile);
       }
@@ -393,18 +385,18 @@ export const AiTutorPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-300 max-w-6xl mx-auto">
+    <div className="space-y-7 animate-fade-in-up max-w-6xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/[0.06]">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
-              AI Tutor <Sparkles className="w-6 h-6 text-amber-400 animate-pulse" />
-            </h1>
-            <Badge variant="brand" size="sm">Personalized Mentor</Badge>
-          </div>
-          <p className="text-slate-400 text-sm">
-            AI-powered tutor tailored to your exact college, stream, syllabus, and previous year exam trends.
+          <Badge variant="brand" size="sm" className="mb-3">
+            <Sparkles className="w-3 h-3 mr-1 text-amber-400" /> Interactive Mentor
+          </Badge>
+          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight flex items-center gap-2">
+            AI Tutor: Prof. Spark
+          </h1>
+          <p className="text-slate-400 text-sm mt-1 leading-relaxed">
+            Tailored to your university, course syllabus, and previous year exam trends.
           </p>
         </div>
 
@@ -413,30 +405,30 @@ export const AiTutorPage: React.FC = () => {
             variant="outline"
             size="sm"
             onClick={() => setEditingProfile(true)}
-            icon={<Sliders className="w-4 h-4" />}
+            icon={<Sliders className="w-3.5 h-3.5" />}
           >
-            Change Course & Institute
+            Edit University & Profile
           </Button>
         )}
       </div>
 
       {/* SETUP FORM MODE */}
       {editingProfile ? (
-        <Card glow className="p-8 max-w-2xl mx-auto space-y-6">
-          <div className="flex items-center gap-3 pb-4 border-b border-slate-800">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center text-white shadow-md">
-              <GraduationCap className="w-6 h-6" />
+        <Card glow className="p-7 max-w-2xl mx-auto space-y-6">
+          <div className="flex items-center gap-3.5 pb-4 border-b border-slate-800">
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center text-white shadow-brand-sm">
+              <GraduationCap className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white">Configure Your AI Tutor</h2>
-              <p className="text-xs text-slate-400">Tell Prof. Spark about your university & course so it can teach you targeted exam material.</p>
+              <h2 className="text-lg font-bold text-white">Configure Your AI Tutor</h2>
+              <p className="text-xs text-slate-400">Tell Prof. Spark about your college & courses so it can generate laser-focused exam notes.</p>
             </div>
           </div>
 
-          <form onSubmit={handleSaveProfile} className="space-y-5">
+          <form onSubmit={handleSaveProfile} className="space-y-4">
             <Input
-              label="Institute / College / University Name"
-              placeholder="e.g., Lovely Professional University, Delhi University, IIT Bombay"
+              label="Institute / University Name"
+              placeholder="e.g., Lovely Professional University, IIT Bombay, Stanford"
               value={institute}
               onChange={(e) => setInstitute(e.target.value)}
               icon={<Building className="w-4 h-4" />}
@@ -445,8 +437,8 @@ export const AiTutorPage: React.FC = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Input
-                label="Course Stream / Major"
-                placeholder="e.g., B.Tech Computer Science, B.Com, MBBS"
+                label="Stream / Degree"
+                placeholder="e.g., B.Tech Computer Science, BCA, MBA"
                 value={stream}
                 onChange={(e) => setStream(e.target.value)}
                 icon={<BookOpen className="w-4 h-4" />}
@@ -458,7 +450,7 @@ export const AiTutorPage: React.FC = () => {
                 <select
                   value={year}
                   onChange={(e) => setYear(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-brand-500"
+                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-brand-500 transition-colors"
                 >
                   <option value="1st Year">1st Year / Semester 1 & 2</option>
                   <option value="2nd Year">2nd Year / Semester 3 & 4</option>
@@ -471,7 +463,7 @@ export const AiTutorPage: React.FC = () => {
             </div>
 
             <Input
-              label="Key Subjects & Course Codes (Comma Separated)"
+              label="Subject Codes / Course Names (Comma Separated)"
               placeholder="e.g., CSE202, CSE205, INT335, MTH401, PEL132"
               value={subjects}
               onChange={(e) => setSubjects(e.target.value)}
@@ -479,58 +471,59 @@ export const AiTutorPage: React.FC = () => {
             />
 
             {/* PYQ Option Box */}
-            <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4">
-              <h4 className="text-sm font-bold text-slate-200 flex items-center gap-2">
-                <Flame className="w-4 h-4 text-amber-400" /> Previous Year Question Papers (PYQs)
-              </h4>
+            <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-3">
+              <div className="flex items-center gap-2">
+                <Flame className="w-4 h-4 text-amber-400" />
+                <span className="text-xs font-bold text-slate-200">Past Exam Papers (PYQs)</span>
+              </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-start gap-2.5">
                 <input
                   type="checkbox"
                   id="autoFetchPyq"
                   checked={autoFetchPyq}
                   onChange={(e) => setAutoFetchPyq(e.target.checked)}
-                  className="w-4 h-4 rounded border-slate-700 bg-slate-950 text-brand-500 focus:ring-brand-500"
+                  className="w-4 h-4 rounded border-slate-700 bg-slate-950 text-brand-500 focus:ring-brand-500 mt-0.5"
                 />
-                <label htmlFor="autoFetchPyq" className="text-xs text-slate-300 cursor-pointer">
-                  <strong>Auto-Browse PYQs:</strong> Don't have PYQs? Let AI automatically fetch past year trends for {institute || 'your institute'}.
+                <label htmlFor="autoFetchPyq" className="text-xs text-slate-300 cursor-pointer leading-relaxed">
+                  <strong>Auto-Discover PYQs:</strong> Automatically synthesize past university examination trends for {institute || 'your college'}.
                 </label>
               </div>
 
               {!autoFetchPyq && (
                 <div className="pt-2">
-                  <label className="block text-xs font-semibold text-slate-300 mb-2">Upload Syllabus or PYQ PDF (Optional)</label>
+                  <label className="block text-[11px] font-semibold text-slate-400 mb-1.5">Upload Custom Syllabus or PYQ PDF (Optional)</label>
                   <input
                     type="file"
                     accept=".pdf,.docx,.pptx,.txt"
                     onChange={(e) => setPyqFile(e.target.files?.[0] || null)}
-                    className="block w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-brand-500/10 file:text-brand-400 hover:file:bg-brand-500/20 cursor-pointer"
+                    className="block w-full text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-brand-500/10 file:text-brand-400 hover:file:bg-brand-500/20 cursor-pointer"
                   />
                 </div>
               )}
             </div>
 
-            {/* Tutor Vibe / Tone Selector */}
+            {/* Tutor Vibe Selector */}
             <div className="space-y-2">
-              <label className="block text-xs font-semibold text-slate-300">Tutor Vibe & Personality</label>
-              <div className="grid grid-cols-3 gap-3">
+              <label className="block text-xs font-semibold text-slate-300">Teaching Style & Personality</label>
+              <div className="grid grid-cols-3 gap-2.5">
                 <button
                   type="button"
                   onClick={() => setTone('funny')}
                   className={`p-3 rounded-xl border text-xs font-bold text-center transition-all ${
                     tone === 'funny'
-                      ? 'border-amber-400 bg-amber-400/10 text-amber-300 shadow-md'
+                      ? 'border-amber-400 bg-amber-400/10 text-amber-300 shadow-glow-amber'
                       : 'border-slate-800 bg-slate-900/50 text-slate-400 hover:border-slate-700'
                   }`}
                 >
-                  😜 Witty & Funny
+                  😜 Witty & Energetic
                 </button>
                 <button
                   type="button"
                   onClick={() => setTone('academic')}
                   className={`p-3 rounded-xl border text-xs font-bold text-center transition-all ${
                     tone === 'academic'
-                      ? 'border-brand-500 bg-brand-500/10 text-brand-300 shadow-md'
+                      ? 'border-brand-500 bg-brand-500/15 text-brand-300 shadow-glow-sm'
                       : 'border-slate-800 bg-slate-900/50 text-slate-400 hover:border-slate-700'
                   }`}
                 >
@@ -541,7 +534,7 @@ export const AiTutorPage: React.FC = () => {
                   onClick={() => setTone('crunch')}
                   className={`p-3 rounded-xl border text-xs font-bold text-center transition-all ${
                     tone === 'crunch'
-                      ? 'border-rose-500 bg-rose-500/10 text-rose-300 shadow-md'
+                      ? 'border-rose-500 bg-rose-500/15 text-rose-300 shadow-sm'
                       : 'border-slate-800 bg-slate-900/50 text-slate-400 hover:border-slate-700'
                   }`}
                 >
@@ -550,7 +543,7 @@ export const AiTutorPage: React.FC = () => {
               </div>
             </div>
 
-            <Button type="submit" icon={<ChevronRight className="w-4 h-4" />} className="w-full py-3">
+            <Button type="submit" icon={<ChevronRight className="w-4 h-4" />} size="md" className="w-full mt-2">
               Activate AI Tutor
             </Button>
           </form>
@@ -558,42 +551,35 @@ export const AiTutorPage: React.FC = () => {
       ) : (
         /* INTERACTIVE TUTOR CHAT & STUDY DASHBOARD */
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Left Column: Tutor Info & Syllabus Card */}
+          {/* Left Column: Tutor Profile Card */}
           <div className="lg:col-span-1 space-y-4">
-            <Card className="p-5 space-y-4">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Academic Context</span>
-                <Badge variant="success" size="sm">Active</Badge>
+            <Card className="p-4 space-y-3.5">
+              <div className="flex items-center justify-between pb-2.5 border-b border-slate-800">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Academic Context</span>
+                <Badge variant="success" size="xs" dot>Active</Badge>
               </div>
 
-              <div className="space-y-3 text-xs">
+              <div className="space-y-2.5 text-xs font-mono">
                 <div>
-                  <span className="text-slate-500 font-mono block">INSTITUTE</span>
-                  <span className="font-bold text-white text-sm">{profile?.institute}</span>
+                  <span className="text-[10px] text-slate-500 block uppercase">Institute</span>
+                  <span className="font-bold text-white text-xs truncate block">{profile?.institute}</span>
                 </div>
                 <div>
-                  <span className="text-slate-500 font-mono block">COURSE & YEAR</span>
-                  <span className="font-semibold text-slate-200">{profile?.stream} ({profile?.year})</span>
+                  <span className="text-[10px] text-slate-500 block uppercase">Course</span>
+                  <span className="font-medium text-slate-300 block">{profile?.stream} ({profile?.year})</span>
                 </div>
                 <div>
-                  <span className="text-slate-500 font-mono block">SUBJECTS</span>
-                  <span className="text-slate-300 leading-relaxed block">{profile?.subjects}</span>
-                </div>
-                <div>
-                  <span className="text-slate-500 font-mono block">PYQ MODE</span>
-                  <span className="text-amber-400 font-semibold flex items-center gap-1 mt-0.5">
-                    <Sparkles className="w-3 h-3" />
-                    {profile?.autoFetchPyq ? 'Auto-Indexed Past Papers' : 'Uploaded Custom PYQ'}
-                  </span>
+                  <span className="text-[10px] text-slate-500 block uppercase">Curriculum</span>
+                  <span className="text-slate-400 text-[11px] leading-relaxed block">{profile?.subjects}</span>
                 </div>
               </div>
 
-              <div className="pt-2">
+              <div className="pt-2 border-t border-slate-800/80">
                 <Button
                   variant="ghost"
-                  size="sm"
+                  size="xs"
                   onClick={() => setEditingProfile(true)}
-                  className="w-full text-xs text-slate-400 hover:text-white"
+                  className="w-full text-slate-400 hover:text-white"
                 >
                   Edit Profile
                 </Button>
@@ -602,33 +588,33 @@ export const AiTutorPage: React.FC = () => {
 
             {/* Quick Action Chips */}
             <Card className="p-4 space-y-2">
-              <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Quick Exam Hacks</h4>
+              <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 font-mono">Exam Hacks</h4>
               <button
                 onClick={() => handleSendMessage(undefined, `What are the top 5 most repeated exam questions for ${profile?.subjects} at ${profile?.institute}?`)}
-                className="w-full text-left p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs text-slate-200 transition-colors flex items-center justify-between"
+                className="w-full text-left p-2.5 rounded-xl bg-slate-900/60 hover:bg-slate-850 border border-slate-800 text-xs text-slate-200 transition-colors flex items-center justify-between group"
               >
                 <span>🔥 Top 5 Repeated PYQs</span>
-                <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
+                <ChevronRight className="w-3.5 h-3.5 text-slate-600 group-hover:text-brand-400 transition-colors" />
               </button>
               <button
                 onClick={() => handleSendMessage(undefined, `Give me a 10-minute crash revision summary for ${profile?.subjects}.`)}
-                className="w-full text-left p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs text-slate-200 transition-colors flex items-center justify-between"
+                className="w-full text-left p-2.5 rounded-xl bg-slate-900/60 hover:bg-slate-850 border border-slate-800 text-xs text-slate-200 transition-colors flex items-center justify-between group"
               >
                 <span>⚡ 10-Min Crash Revision</span>
-                <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
+                <ChevronRight className="w-3.5 h-3.5 text-slate-600 group-hover:text-brand-400 transition-colors" />
               </button>
               <button
-                onClick={() => handleSendMessage(undefined, `Tell me a funny memory trick or acronym to remember key concepts in ${profile?.subjects}.`)}
-                className="w-full text-left p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs text-slate-200 transition-colors flex items-center justify-between"
+                onClick={() => handleSendMessage(undefined, `Tell me a memorable mnemonic or memory trick for ${profile?.subjects}.`)}
+                className="w-full text-left p-2.5 rounded-xl bg-slate-900/60 hover:bg-slate-850 border border-slate-800 text-xs text-slate-200 transition-colors flex items-center justify-between group"
               >
-                <span>😜 Funny Mnemonics</span>
-                <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
+                <span>😜 Memory Mnemonics</span>
+                <ChevronRight className="w-3.5 h-3.5 text-slate-600 group-hover:text-brand-400 transition-colors" />
               </button>
             </Card>
           </div>
 
           {/* Right Column: Avatar & Chat Interface */}
-          <div className="lg:col-span-3 space-y-4 flex flex-col h-[75vh]">
+          <div className="lg:col-span-3 space-y-4 flex flex-col h-[74vh]">
             {/* Interactive Animated Tutor Avatar Bar */}
             <TutorAvatar
               mood={avatarMood}
@@ -641,7 +627,7 @@ export const AiTutorPage: React.FC = () => {
             />
 
             {/* Chat Messages Log */}
-            <Card className="flex-1 p-4 overflow-y-auto space-y-4 bg-slate-950/60 border-slate-800">
+            <Card className="flex-1 p-4 overflow-y-auto space-y-4 bg-slate-950/60 border-slate-800/80">
               {messages.map((msg) => (
                 <div
                   key={msg.id}
@@ -650,7 +636,7 @@ export const AiTutorPage: React.FC = () => {
                   <div
                     className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 text-xs font-bold ${
                       msg.sender === 'tutor'
-                        ? 'bg-gradient-to-tr from-brand-600 to-indigo-400 text-white shadow-md'
+                        ? 'bg-gradient-to-tr from-brand-600 to-indigo-500 text-white shadow-brand-sm'
                         : 'bg-slate-800 text-slate-200 border border-slate-700'
                     }`}
                   >
@@ -658,26 +644,26 @@ export const AiTutorPage: React.FC = () => {
                   </div>
 
                   <div
-                    className={`max-w-[85%] rounded-2xl p-4 text-sm leading-relaxed ${
+                    className={`max-w-[85%] rounded-2xl p-4 text-xs sm:text-sm leading-relaxed ${
                       msg.sender === 'tutor'
-                        ? 'bg-slate-900/90 text-slate-100 border border-slate-800 shadow-sm'
-                        : 'bg-brand-600 text-white shadow-md shadow-brand-600/20'
+                        ? 'bg-slate-900/90 text-slate-100 border border-slate-800 shadow-card'
+                        : 'bg-gradient-to-r from-brand-600 to-indigo-600 text-white shadow-card'
                     }`}
                   >
-                    <div className="flex items-center justify-between gap-4 mb-1 text-[10px] opacity-70 border-b border-white/10 pb-1">
+                    <div className="flex items-center justify-between gap-4 mb-1.5 text-[10px] opacity-70 border-b border-white/10 pb-1">
                       <span className="font-semibold">{msg.sender === 'tutor' ? 'Prof. Spark' : 'You'}</span>
-                      <span>{msg.timestamp}</span>
+                      <span className="font-mono">{msg.timestamp}</span>
                     </div>
                     <FormattedText content={msg.text} />
 
                     {msg.sender === 'tutor' && (
-                      <div className="mt-2 pt-2 border-t border-slate-800/60 flex items-center justify-end gap-2">
+                      <div className="mt-2.5 pt-2 border-t border-slate-800/60 flex items-center justify-end gap-2">
                         <button
                           onClick={() => speakText(msg.text)}
-                          title="Speak Out Loud"
-                          className="text-xs text-brand-400 hover:text-brand-300 flex items-center gap-1 px-2 py-1 rounded-lg bg-brand-500/10 hover:bg-brand-500/20 transition-colors"
+                          title="Read Aloud"
+                          className="text-[11px] text-brand-400 hover:text-brand-300 flex items-center gap-1 px-2.5 py-1 rounded-lg bg-brand-500/10 hover:bg-brand-500/20 transition-colors font-medium"
                         >
-                          <Volume2 className="w-3.5 h-3.5" /> Read Aloud
+                          <Volume2 className="w-3 h-3" /> Read Aloud
                         </button>
                       </div>
                     )}
@@ -686,9 +672,9 @@ export const AiTutorPage: React.FC = () => {
               ))}
 
               {loadingResponse && (
-                <div className="flex items-center gap-3 text-slate-400 text-xs py-2 px-4 rounded-xl bg-slate-900/50 border border-slate-800 w-fit animate-pulse">
+                <div className="flex items-center gap-2.5 text-slate-400 text-xs py-2 px-3.5 rounded-xl bg-slate-900/50 border border-slate-800 w-fit animate-pulse">
                   <RefreshCw className="w-3.5 h-3.5 animate-spin text-brand-400" />
-                  Prof. Spark is preparing your personalized explanation...
+                  Prof. Spark is formulating your academic explanation...
                 </div>
               )}
 
@@ -699,17 +685,18 @@ export const AiTutorPage: React.FC = () => {
             <form onSubmit={(e) => handleSendMessage(e)} className="flex items-center gap-2">
               <input
                 type="text"
-                placeholder={`Ask Prof. Spark about ${profile?.subjects || 'your syllabus'} (e.g. CSE202, INT335, MTH401)...`}
+                placeholder={`Ask Prof. Spark anything about ${profile?.subjects || 'your curriculum'}...`}
                 value={inputMsg}
                 onChange={(e) => setInputMsg(e.target.value)}
                 disabled={loadingResponse}
-                className="flex-1 bg-slate-900 border border-slate-800 rounded-2xl px-5 py-3.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-brand-500 shadow-inner"
+                className="flex-1 bg-slate-950/80 border border-slate-800 rounded-2xl px-4 py-3 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-brand-500 shadow-inner transition-all"
               />
               <Button
                 type="submit"
                 disabled={!inputMsg.trim() || loadingResponse}
-                icon={<Send className="w-4 h-4" />}
-                className="rounded-2xl px-5 py-3.5 shrink-0"
+                icon={<Send className="w-3.5 h-3.5" />}
+                size="sm"
+                className="rounded-2xl px-5 shrink-0"
               >
                 Ask Tutor
               </Button>

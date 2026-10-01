@@ -260,20 +260,17 @@ export const QuizzesPage: React.FC = () => {
     listDocumentsApi().then((r) => r.data && setDocuments(r.data));
   }, []);
 
-  /** Generate dynamic, non-repeating unique question set for chosen questionCount (5, 10, or 20) */
   const generateQuestionsForSession = (count: number): Question[] => {
-    // Shuffle question bank
     const shuffledPool = [...QUESTION_BANK].sort(() => Math.random() - 0.5);
 
-    // If documents uploaded, inject document context questions
     if (documents.length > 0) {
       const doc = documents[0];
       shuffledPool.unshift({
         id: 901,
-        question: `Based on your study material "${doc.title}", what is the primary core concept emphasized in the introductory section?`,
+        question: `Based on your study material "${doc.title}", what core pedagogical concept is emphasized in the introductory section?`,
         options: [
           `System architecture and foundational principles of ${doc.title}`,
-          `Unrelated historical background without technical formulas`,
+          `Unrelated historical background without formulas`,
           `Deprecated legacy protocol definitions`,
           `Hardware peripheral installation procedures`
         ],
@@ -282,15 +279,13 @@ export const QuizzesPage: React.FC = () => {
       });
     }
 
-    // Pick top 'count' unique questions
     const selected = shuffledPool.slice(0, Math.min(count, shuffledPool.length));
 
-    // Expand if user asked for 20 questions but pool size is smaller
     while (selected.length < count) {
       const idx = selected.length + 1;
       selected.push({
         id: 1000 + idx,
-        question: `Question ${idx}: Which pedagogical principle states that testing memory retrieval accelerates long-term retention?`,
+        question: `Question ${idx}: Which pedagogical principle states that retrieval practice accelerates long-term retention?`,
         options: ["Passive Re-reading", "Active Recall Effect", "Cramming overnight", "Subconscious Listening"],
         correctAnswer: 1,
         explanation: "The Active Recall Effect proves that actively retrieving knowledge from memory builds far stronger neural connections than passive review."
@@ -308,7 +303,7 @@ export const QuizzesPage: React.FC = () => {
     setScore(0);
     setSelectedOption(null);
     setShowExplanation(false);
-    showToast('info', 'Quiz Started!', `Generated ${sessionQuestions.length} unique ${difficulty} active recall questions.`);
+    showToast('info', 'Quiz Started', `Generated ${sessionQuestions.length} unique ${difficulty} questions.`);
   };
 
   const currentQuestion = activeQuestions[currentQIndex] || QUESTION_BANK[0];
@@ -320,9 +315,9 @@ export const QuizzesPage: React.FC = () => {
 
     if (idx === currentQuestion.correctAnswer) {
       setScore((prev) => prev + 1);
-      showToast('success', 'Correct Answer! 🎉', '+1 Point!');
+      showToast('success', 'Correct! 🎉', '+1 Point');
     } else {
-      showToast('error', 'Not quite right', 'Check the explanation below.');
+      showToast('error', 'Not quite right', 'Review the explanation below.');
     }
   };
 
@@ -347,28 +342,28 @@ export const QuizzesPage: React.FC = () => {
         };
         localStorage.setItem('cogniva_quiz_attempts', JSON.stringify([newAttempt, ...existing]));
       } catch {}
-      showToast('success', 'Quiz Completed! 🏆', `Final Score: ${finalScore} / ${activeQuestions.length}`);
+      showToast('success', 'Quiz Complete! 🏆', `Final Score: ${finalScore} / ${activeQuestions.length}`);
     }
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-300 max-w-4xl mx-auto">
+    <div className="space-y-7 animate-fade-in-up max-w-4xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/[0.06]">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
-              Cogniva Quiz <Sparkles className="w-6 h-6 text-amber-400 animate-bounce" />
-            </h1>
-            <Badge variant="brand" size="sm">Active Recall Vibe</Badge>
-          </div>
-          <p className="text-slate-400 text-sm">
-            AI-generated adaptive assessments with instant feedback, pedagogical explanations, and score tracking.
+          <Badge variant="brand" size="sm" className="mb-3">
+            <Zap className="w-3 h-3 mr-1 text-amber-400" /> Active Recall Assessment
+          </Badge>
+          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight flex items-center gap-2">
+            Smart Quiz Generator
+          </h1>
+          <p className="text-slate-400 text-sm mt-1 leading-relaxed">
+            Strengthen memory pathways with adaptive multi-choice questions and instant feedback.
           </p>
         </div>
 
         {quizMode === 'idle' && (
-          <Button onClick={handleStartQuiz} icon={<Play className="w-4 h-4" />}>
+          <Button onClick={handleStartQuiz} icon={<Play className="w-3.5 h-3.5" />} size="sm">
             Start Practice Quiz
           </Button>
         )}
@@ -376,91 +371,89 @@ export const QuizzesPage: React.FC = () => {
 
       {/* IDLE MODE: QUIZ GENERATOR & CONFIG */}
       {quizMode === 'idle' && (
-        <div className="space-y-6">
-          <Card glow className="p-8 space-y-6">
-            <div className="flex items-center gap-3 pb-4 border-b border-slate-800">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-brand-600 to-amber-400 flex items-center justify-center text-white shadow-lg shadow-brand-500/20">
-                <HelpCircle className="w-6 h-6" />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-white">Generate Custom Active Recall Quiz</h3>
-                <p className="text-xs text-slate-400">Configure question length (5, 10, or 20 questions), difficulty, and study material context.</p>
+        <Card glow className="p-7 space-y-6">
+          <div className="flex items-center gap-3.5 pb-4 border-b border-slate-800">
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-brand-600 to-amber-400 flex items-center justify-center text-white shadow-glow-sm">
+              <HelpCircle className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-base font-bold text-white">Generate Custom Quiz</h3>
+              <p className="text-xs text-slate-400">Select session length, difficulty level, and study material context.</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {/* Difficulty Selector */}
+            <div className="space-y-2">
+              <label className="block text-xs font-semibold text-slate-300">Difficulty Level</label>
+              <div className="grid grid-cols-3 gap-2">
+                {(['Easy', 'Medium', 'Hard'] as const).map((lvl) => (
+                  <button
+                    key={lvl}
+                    type="button"
+                    onClick={() => setDifficulty(lvl)}
+                    className={`p-3 rounded-xl border text-xs font-bold text-center transition-all ${
+                      difficulty === lvl
+                        ? 'border-brand-500 bg-brand-500/20 text-brand-300 shadow-glow-sm'
+                        : 'border-slate-800 bg-slate-900/50 text-slate-400 hover:border-slate-700'
+                    }`}
+                  >
+                    {lvl === 'Easy' && '🌱 '}
+                    {lvl === 'Medium' && '⚡ '}
+                    {lvl === 'Hard' && '🔥 '}
+                    {lvl}
+                  </button>
+                ))}
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {/* Difficulty Selector */}
-              <div className="space-y-2">
-                <label className="block text-xs font-semibold text-slate-300">Difficulty Level</label>
-                <div className="grid grid-cols-3 gap-2">
-                  {(['Easy', 'Medium', 'Hard'] as const).map((lvl) => (
-                    <button
-                      key={lvl}
-                      type="button"
-                      onClick={() => setDifficulty(lvl)}
-                      className={`p-3 rounded-xl border text-xs font-bold text-center transition-all ${
-                        difficulty === lvl
-                          ? 'border-brand-500 bg-brand-500/20 text-brand-300 shadow-md shadow-brand-500/10'
-                          : 'border-slate-800 bg-slate-900/60 text-slate-400 hover:border-slate-700'
-                      }`}
-                    >
-                      {lvl === 'Easy' && '🌱 '}
-                      {lvl === 'Medium' && '⚡ '}
-                      {lvl === 'Hard' && '🔥 '}
-                      {lvl}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Question Count */}
-              <div className="space-y-2">
-                <label className="block text-xs font-semibold text-slate-300">Number of Questions</label>
-                <div className="grid grid-cols-3 gap-2">
-                  {[5, 10, 20].map((count) => (
-                    <button
-                      key={count}
-                      type="button"
-                      onClick={() => setQuestionCount(count)}
-                      className={`p-3 rounded-xl border text-xs font-bold text-center transition-all ${
-                        questionCount === count
-                          ? 'border-amber-400 bg-amber-400/20 text-amber-300 shadow-md shadow-amber-400/10'
-                          : 'border-slate-800 bg-slate-900/60 text-slate-400 hover:border-slate-700'
-                      }`}
-                    >
-                      {count} Questions
-                    </button>
-                  ))}
-                </div>
+            {/* Question Count */}
+            <div className="space-y-2">
+              <label className="block text-xs font-semibold text-slate-300">Session Length</label>
+              <div className="grid grid-cols-3 gap-2">
+                {[5, 10, 20].map((count) => (
+                  <button
+                    key={count}
+                    type="button"
+                    onClick={() => setQuestionCount(count)}
+                    className={`p-3 rounded-xl border text-xs font-bold text-center transition-all ${
+                      questionCount === count
+                        ? 'border-amber-400 bg-amber-400/20 text-amber-300 shadow-glow-amber'
+                        : 'border-slate-800 bg-slate-900/50 text-slate-400 hover:border-slate-700'
+                    }`}
+                  >
+                    {count} Questions
+                  </button>
+                ))}
               </div>
             </div>
+          </div>
 
-            {documents.length > 0 && (
-              <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300 flex items-center gap-2">
-                <FileText className="w-4 h-4 text-brand-400 shrink-0" />
-                <span>Quiz generator will include questions grounded in <strong>{documents[0].title}</strong>.</span>
-              </div>
-            )}
+          {documents.length > 0 && (
+            <div className="p-3.5 rounded-2xl bg-slate-950/70 border border-slate-800 text-xs text-slate-300 flex items-center gap-2.5">
+              <FileText className="w-4 h-4 text-brand-400 shrink-0" />
+              <span>Grounded in uploaded material: <strong className="text-white">{documents[0].title}</strong></span>
+            </div>
+          )}
 
-            <Button onClick={handleStartQuiz} icon={<Play className="w-4 h-4" />} className="w-full py-3.5 text-sm font-bold">
-              Launch {questionCount}-Question {difficulty} Quiz
-            </Button>
-          </Card>
-        </div>
+          <Button onClick={handleStartQuiz} icon={<Play className="w-4 h-4" />} size="md" className="w-full">
+            Launch {questionCount}-Question {difficulty} Quiz
+          </Button>
+        </Card>
       )}
 
       {/* RUNNING MODE: INTERACTIVE QUIZ RUNNER */}
       {quizMode === 'running' && activeQuestions.length > 0 && (
-        <Card glow className="p-8 space-y-6 relative overflow-hidden">
+        <Card glow className="p-7 space-y-6 relative overflow-hidden">
           {/* Progress Bar */}
           <div className="space-y-2">
-            <div className="flex items-center justify-between text-xs text-slate-400 font-semibold">
+            <div className="flex items-center justify-between text-xs font-mono text-slate-400">
               <span>Question {currentQIndex + 1} of {activeQuestions.length}</span>
               <span className="text-amber-400 font-bold">Score: {score}</span>
             </div>
-            <div className="w-full h-2.5 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
+            <div className="w-full h-2 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
               <div
-                className="h-full bg-gradient-to-r from-brand-500 via-indigo-500 to-amber-400 transition-all duration-500 rounded-full shadow-sm"
+                className="h-full bg-gradient-to-r from-brand-500 via-indigo-500 to-amber-400 transition-all duration-500 rounded-full"
                 style={{ width: `${((currentQIndex + 1) / activeQuestions.length) * 100}%` }}
               />
             </div>
@@ -468,26 +461,26 @@ export const QuizzesPage: React.FC = () => {
 
           {/* Question Text */}
           <div className="py-2">
-            <h3 className="text-lg sm:text-xl font-bold text-white leading-relaxed">
+            <h3 className="text-base sm:text-lg font-bold text-white leading-relaxed">
               {currentQuestion.question}
             </h3>
           </div>
 
           {/* Options List */}
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             {currentQuestion.options.map((optionText, idx) => {
               const isSelected = selectedOption === idx;
               const isCorrect = idx === currentQuestion.correctAnswer;
               const showResult = selectedOption !== null;
 
-              let optionStyle = 'border-slate-800 bg-slate-900/60 text-slate-200 hover:border-slate-700 hover:bg-slate-800/80';
+              let optionStyle = 'border-slate-800/80 bg-slate-900/50 text-slate-200 hover:border-slate-700 hover:bg-slate-850';
               if (showResult) {
                 if (isCorrect) {
-                  optionStyle = 'border-emerald-500/80 bg-emerald-950/40 text-emerald-200 shadow-md shadow-emerald-500/10 scale-[1.01]';
+                  optionStyle = 'border-emerald-500/80 bg-emerald-950/30 text-emerald-200 shadow-glow-sm';
                 } else if (isSelected && !isCorrect) {
-                  optionStyle = 'border-rose-500/80 bg-rose-950/40 text-rose-200';
+                  optionStyle = 'border-rose-500/80 bg-rose-950/30 text-rose-200';
                 } else {
-                  optionStyle = 'border-slate-800/50 bg-slate-950/40 text-slate-500 opacity-60';
+                  optionStyle = 'border-slate-800/40 bg-slate-950/40 text-slate-500 opacity-50';
                 }
               }
 
@@ -496,17 +489,17 @@ export const QuizzesPage: React.FC = () => {
                   key={idx}
                   onClick={() => handleSelectOption(idx)}
                   disabled={selectedOption !== null}
-                  className={`w-full p-4 rounded-2xl border text-left font-medium text-sm transition-all duration-200 flex items-center justify-between gap-3 ${optionStyle}`}
+                  className={`w-full p-3.5 rounded-2xl border text-left font-medium text-xs sm:text-sm transition-all duration-200 flex items-center justify-between gap-3 ${optionStyle}`}
                 >
                   <div className="flex items-center gap-3">
-                    <span className="w-7 h-7 rounded-xl bg-slate-800/80 border border-slate-700 flex items-center justify-center text-xs font-mono font-bold shrink-0">
+                    <span className="w-6 h-6 rounded-lg bg-slate-800/80 border border-slate-700 flex items-center justify-center text-xs font-mono font-bold shrink-0">
                       {String.fromCharCode(65 + idx)}
                     </span>
                     <span>{optionText}</span>
                   </div>
 
-                  {showResult && isCorrect && <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />}
-                  {showResult && isSelected && !isCorrect && <XCircle className="w-5 h-5 text-rose-400 shrink-0" />}
+                  {showResult && isCorrect && <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />}
+                  {showResult && isSelected && !isCorrect && <XCircle className="w-4 h-4 text-rose-400 shrink-0" />}
                 </button>
               );
             })}
@@ -514,11 +507,11 @@ export const QuizzesPage: React.FC = () => {
 
           {/* Explanation Box */}
           {showExplanation && (
-            <div className="p-5 rounded-2xl bg-brand-950/40 border border-brand-500/30 space-y-2 animate-in fade-in duration-300">
-              <div className="flex items-center gap-2 text-xs font-bold text-brand-300 uppercase tracking-wider">
-                <Zap className="w-4 h-4 text-amber-400" /> Explanation & Insight
+            <div className="p-4 rounded-2xl bg-brand-950/40 border border-brand-500/25 space-y-1.5 animate-fade-in-up">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-brand-300 uppercase tracking-wider font-mono">
+                <Zap className="w-3.5 h-3.5 text-amber-400" /> Explanation & Insight
               </div>
-              <p className="text-xs text-slate-300 leading-relaxed font-sans">
+              <p className="text-xs text-slate-300 leading-relaxed">
                 {currentQuestion.explanation}
               </p>
             </div>
@@ -526,9 +519,9 @@ export const QuizzesPage: React.FC = () => {
 
           {/* Next Button */}
           {selectedOption !== null && (
-            <div className="pt-4 flex justify-end border-t border-slate-800">
-              <Button onClick={handleNextQuestion} icon={<ArrowRight className="w-4 h-4" />}>
-                {currentQIndex + 1 < activeQuestions.length ? 'Next Question' : 'View Final Results'}
+            <div className="pt-3 flex justify-end border-t border-slate-800">
+              <Button onClick={handleNextQuestion} icon={<ArrowRight className="w-4 h-4" />} size="sm">
+                {currentQIndex + 1 < activeQuestions.length ? 'Next Question' : 'View Results'}
               </Button>
             </div>
           )}
@@ -537,34 +530,34 @@ export const QuizzesPage: React.FC = () => {
 
       {/* COMPLETED MODE: SCORE CARD & CELEBRATION */}
       {quizMode === 'completed' && (
-        <Card glow className="p-10 text-center space-y-6">
-          <div className="w-20 h-20 rounded-3xl bg-gradient-to-tr from-amber-400 via-brand-500 to-indigo-500 p-1 mx-auto shadow-xl shadow-amber-400/20 animate-bounce">
+        <Card glow className="p-9 text-center space-y-6">
+          <div className="w-16 h-16 rounded-3xl bg-gradient-to-tr from-amber-400 via-brand-500 to-indigo-500 p-0.5 mx-auto shadow-glow-amber">
             <div className="w-full h-full bg-slate-950 rounded-[22px] flex items-center justify-center text-amber-400">
-              <Award className="w-10 h-10" />
+              <Award className="w-8 h-8" />
             </div>
           </div>
 
           <div>
-            <h2 className="text-2xl font-extrabold text-white">Quiz Completed! 🎉</h2>
-            <p className="text-slate-400 text-sm mt-1">Great job practicing active recall for {activeQuestions.length} questions!</p>
+            <h2 className="text-2xl font-black text-white">Quiz Completed! 🎉</h2>
+            <p className="text-slate-400 text-xs mt-1">Great session practicing active recall with {activeQuestions.length} questions.</p>
           </div>
 
-          <div className="inline-flex items-center gap-6 p-6 rounded-2xl bg-slate-900 border border-slate-800 shadow-inner">
+          <div className="inline-flex items-center gap-6 p-5 rounded-2xl bg-slate-900/60 border border-slate-800">
             <div>
-              <span className="text-xs text-slate-500 font-mono block">YOUR SCORE</span>
-              <span className="text-3xl font-extrabold text-white">{score} / {activeQuestions.length}</span>
+              <span className="text-[10px] text-slate-500 font-mono block uppercase">Your Score</span>
+              <span className="text-2xl font-black text-white">{score} / {activeQuestions.length}</span>
             </div>
-            <div className="h-8 w-px bg-slate-800" />
+            <div className="h-7 w-px bg-slate-800" />
             <div>
-              <span className="text-xs text-slate-500 font-mono block">ACCURACY</span>
-              <span className="text-3xl font-extrabold text-emerald-400">
+              <span className="text-[10px] text-slate-500 font-mono block uppercase">Accuracy</span>
+              <span className="text-2xl font-black text-emerald-400">
                 {Math.round((score / Math.max(1, activeQuestions.length)) * 100)}%
               </span>
             </div>
           </div>
 
-          <div className="flex items-center justify-center gap-4 pt-4">
-            <Button onClick={handleStartQuiz} icon={<RotateCcw className="w-4 h-4" />}>
+          <div className="flex items-center justify-center gap-3 pt-2">
+            <Button onClick={handleStartQuiz} icon={<RotateCcw className="w-3.5 h-3.5" />} size="sm">
               Try New {questionCount}-Question Quiz
             </Button>
           </div>
