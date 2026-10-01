@@ -12,7 +12,8 @@ import {
   Plus,
   UploadCloud,
   ArrowRight,
-  BookMarked
+  BookMarked,
+  Globe
 } from 'lucide-react';
 import { Button } from '../components/common/Button';
 import { Card } from '../components/common/Card';
@@ -91,20 +92,18 @@ export const ChatPage: React.FC = () => {
   const handleToggleDocSelection = (docId: string) => {
     setSelectedDocIds((prev) =>
       prev.includes(docId)
-        ? prev.length > 1
-          ? prev.filter((id) => id !== docId)
-          : prev
+        ? prev.filter((id) => id !== docId)
         : [...prev, docId]
     );
   };
 
+  const handleSelectGeneralMode = () => {
+    setSelectedDocIds([]);
+  };
+
   const handleSendMessage = async (customText?: string) => {
     const query = customText || inputMessage;
-    if (!query.trim()) return;
-    if (selectedDocIds.length === 0) {
-      showToast('warning', 'Select Material', 'Please select at least one document to ask questions about.');
-      return;
-    }
+    if (!query.trim() || sending) return;
 
     const tempUserMsg: ChatMessage = {
       id: 'temp-' + Date.now(),
@@ -180,10 +179,10 @@ export const ChatPage: React.FC = () => {
   };
 
   const starterPrompts = [
-    'What are the core concepts and fundamental formulas?',
-    'Summarize the primary takeaways in concise bullet points',
-    'Explain the most frequently examined theory in this material',
-    'Provide a step-by-step example problem with solution',
+    'How do I start a business step-by-step?',
+    'What are the core concepts and key terms?',
+    'How to prepare for technical job interviews?',
+    'Explain the most important formulas or principles',
   ];
 
   return (
@@ -199,10 +198,14 @@ export const ChatPage: React.FC = () => {
               <h1 className="text-base font-bold text-white tracking-tight">
                 Ask Cogniva AI
               </h1>
-              <Badge variant="brand" size="xs" dot>Grounded RAG</Badge>
+              <Badge variant={selectedDocIds.length > 0 ? "brand" : "info"} size="xs" dot>
+                {selectedDocIds.length > 0 ? "Grounded RAG" : "Open Intelligence"}
+              </Badge>
             </div>
             <p className="text-xs text-slate-400 mt-0.5">
-              Deterministic answers cited directly from your course readings and notes.
+              {selectedDocIds.length > 0
+                ? "Grounded on your uploaded readings with citations, plus broad AI intelligence for general topics."
+                : "Ask anything freely: business, career, code, sciences, or study strategies."}
             </p>
           </div>
         </div>
@@ -233,18 +236,26 @@ export const ChatPage: React.FC = () => {
 
       {/* Target Document Selector Strip */}
       <div className="bg-slate-950/80 border-x border-b border-slate-800/70 px-4 py-2.5 flex items-center gap-2 overflow-x-auto text-xs shrink-0">
-        <span className="text-slate-400 font-semibold uppercase tracking-wider text-[10px] shrink-0 flex items-center gap-1.5">
-          <Layers className="w-3 h-3 text-brand-400" /> Active Material:
+        <span className="text-slate-400 font-semibold uppercase tracking-wider text-[10px] shrink-0 flex items-center gap-1.5 font-mono">
+          <Layers className="w-3 h-3 text-brand-400" /> Mode:
         </span>
+
+        {/* General AI Mode Pill */}
+        <button
+          onClick={handleSelectGeneralMode}
+          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs transition-all shrink-0 font-medium ${
+            selectedDocIds.length === 0
+              ? 'bg-amber-400/15 border-amber-400/40 text-amber-300 shadow-glow-amber'
+              : 'bg-slate-900/50 border-slate-800/80 text-slate-400 hover:border-slate-700 hover:text-slate-300'
+          }`}
+        >
+          <Globe className="w-3 h-3" />
+          <span>Open AI Mode</span>
+          {selectedDocIds.length === 0 && <span className="w-1.5 h-1.5 rounded-full bg-amber-400 ml-0.5 animate-pulse" />}
+        </button>
+
         {loadingDocs ? (
           <Skeleton className="h-6 w-44 rounded-full" />
-        ) : documents.length === 0 ? (
-          <div className="flex items-center gap-2 text-slate-500 text-xs">
-            <span>No documents in vault.</span>
-            <Link to="/documents" className="text-brand-400 hover:text-brand-300 font-semibold">
-              Upload PDF →
-            </Link>
-          </div>
         ) : (
           documents.map((doc) => {
             const isSelected = selectedDocIds.includes(doc.id);
@@ -265,26 +276,17 @@ export const ChatPage: React.FC = () => {
             );
           })
         )}
+
+        {documents.length === 0 && !loadingDocs && (
+          <Link to="/documents" className="text-[11px] text-brand-400 hover:text-brand-300 ml-2 font-medium shrink-0">
+            + Upload Material for Citations
+          </Link>
+        )}
       </div>
 
       {/* Main Chat Feed */}
       <div className="flex-1 bg-slate-950/50 border-x border-slate-800/60 overflow-y-auto p-4 sm:p-6 space-y-6">
-        {documents.length === 0 && !loadingDocs ? (
-          <Card className="p-12 text-center max-w-md mx-auto mt-12 border-dashed border-slate-800/80 bg-slate-900/20">
-            <div className="w-14 h-14 rounded-2xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center mx-auto mb-4 text-brand-400">
-              <UploadCloud className="w-7 h-7" />
-            </div>
-            <h3 className="text-base font-bold text-white mb-1.5">Upload Study Materials to Begin</h3>
-            <p className="text-slate-400 text-xs mb-5 max-w-xs mx-auto leading-relaxed">
-              Cogniva AI grounds each answer directly on your uploaded slides, readings, and textbooks.
-            </p>
-            <Link to="/documents">
-              <Button size="sm" icon={<Plus className="w-3.5 h-3.5" />}>
-                Upload Study File
-              </Button>
-            </Link>
-          </Card>
-        ) : messages.length === 0 ? (
+        {messages.length === 0 ? (
           /* Empty Chat Welcome Screen */
           <div className="max-w-2xl mx-auto py-10 text-center space-y-6">
             <div className="w-16 h-16 rounded-3xl bg-gradient-to-tr from-brand-600/20 to-indigo-500/20 border border-brand-500/30 flex items-center justify-center mx-auto text-brand-400 shadow-glow-sm">
@@ -292,10 +294,12 @@ export const ChatPage: React.FC = () => {
             </div>
             <div>
               <h3 className="text-xl font-black text-white tracking-tight">
-                Ask anything about your study material
+                Ask Cogniva AI Anything
               </h3>
               <p className="text-slate-400 text-xs mt-1.5 max-w-md mx-auto leading-relaxed">
-                Every response is mathematically retrieved from your indexed pages with verifiable citations.
+                {selectedDocIds.length > 0
+                  ? "Answers ground directly in your selected course materials with citations, or use general intelligence for open queries."
+                  : "Ask any academic, career, business, or coding question. Cogniva AI is ready to help."}
               </p>
             </div>
 
@@ -412,7 +416,7 @@ export const ChatPage: React.FC = () => {
                     <span className="w-1.5 h-1.5 rounded-full bg-brand-400 animate-bounce" style={{ animationDelay: '150ms' }} />
                     <span className="w-1.5 h-1.5 rounded-full bg-brand-400 animate-bounce" style={{ animationDelay: '300ms' }} />
                   </div>
-                  <span>Retrieving context & formulating grounded answer...</span>
+                  <span>Cogniva AI is thinking and formulating response...</span>
                 </div>
               </div>
             )}
@@ -435,18 +439,18 @@ export const ChatPage: React.FC = () => {
             type="text"
             placeholder={
               selectedDocIds.length > 0
-                ? "Ask a question about your selected material (e.g., 'Explain Big-O notation with an example')..."
-                : "Select a document above to ask questions..."
+                ? "Ask anything about your study material, or any general question (e.g. 'How to start a business')..."
+                : "Ask Cogniva AI anything (general knowledge, coding, career, business, concepts)..."
             }
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
-            disabled={sending || documents.length === 0}
+            disabled={sending}
             className="flex-1 bg-slate-950/80 border border-slate-800 rounded-2xl px-4 py-3 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-brand-500 transition-all shadow-inner"
           />
 
           <Button
             type="submit"
-            disabled={!inputMessage.trim() || sending || documents.length === 0}
+            disabled={!inputMessage.trim() || sending}
             loading={sending}
             icon={<Send className="w-3.5 h-3.5" />}
             size="sm"

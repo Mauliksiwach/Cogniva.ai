@@ -68,7 +68,7 @@ class CitationSource(BaseModel):
 
 class ChatMessageRequest(BaseModel):
     conversation_id: Optional[str] = None
-    document_ids: List[str] = Field(min_length=1)
+    document_ids: List[str] = Field(default_factory=list)
     message: str = Field(min_length=1)
 
 class ChatMessageResponse(BaseModel):

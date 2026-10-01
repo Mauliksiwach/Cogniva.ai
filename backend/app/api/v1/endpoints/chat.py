@@ -1,4 +1,4 @@
-﻿import uuid
+import uuid
 from typing import List, Dict, Any, Optional
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, status
@@ -26,28 +26,30 @@ async def send_chat_message(
     request: ChatMessageRequest,
     current_user: AuthenticatedUser = Depends(get_current_user)
 ):
-    if not request.document_ids:
-        raise BadRequestException("Please select at least one study material/document to ask questions about.")
-
     if not request.message.strip():
         raise BadRequestException("Message cannot be empty.")
 
-    # Validate that user owns all selected documents
-    for doc_id in request.document_ids:
-        document_service.get_document(doc_id, current_user.id)
+    # Gracefully collect any valid documents owned by user
+    valid_doc_ids = []
+    if request.document_ids:
+        for doc_id in request.document_ids:
+            try:
+                document_service.get_document(doc_id, current_user.id)
+                valid_doc_ids.append(doc_id)
+            except Exception:
+                pass
 
     # 1. Manage Conversation Session
     conversation_id = request.conversation_id or str(uuid.uuid4())
     now = datetime.now(timezone.utc)
 
     if conversation_id not in _conversations:
-        first_doc = document_service.get_document(request.document_ids[0], current_user.id)
         title_snippet = request.message[:35] + ("..." if len(request.message) > 35 else "")
         _conversations[conversation_id] = {
             "id": conversation_id,
             "user_id": current_user.id,
             "title": f"Study: {title_snippet}",
-            "document_ids": request.document_ids,
+            "document_ids": valid_doc_ids,
             "created_at": now.isoformat(),
             "updated_at": now.isoformat()
         }
@@ -65,15 +67,17 @@ async def send_chat_message(
         "created_at": now.isoformat()
     })
 
-    # 3. Retrieve relevant chunks across selected documents
-    scored_chunks = retrieval_service.retrieve_relevant_chunks(
-        user_id=current_user.id,
-        document_ids=request.document_ids,
-        query=request.message,
-        top_k=4
-    )
+    # 3. Retrieve relevant chunks if documents were selected
+    scored_chunks = []
+    if valid_doc_ids:
+        scored_chunks = retrieval_service.retrieve_relevant_chunks(
+            user_id=current_user.id,
+            document_ids=valid_doc_ids,
+            query=request.message,
+            top_k=4
+        )
 
-    # 4. Generate Grounded AI Response
+    # 4. Generate AI Response (handles both grounded and general queries)
     ai_result = await ai_service.answer_question(
         query=request.message,
         scored_chunks=scored_chunks
@@ -168,3 +172,20 @@ async def summarize_document(
             "summary": summary
         }
     )
+
+@router.post("/query")
+async def direct_ai_query(payload: Dict[str, Any]):
+    """Direct query endpoint for AI tutor and open assistance without requiring documents."""
+    question = payload.get("question", "").strip()
+    if not question:
+        return {"success": False, "message": "Question cannot be empty", "data": {"answer": ""}}
+
+    result = await ai_service.answer_question(query=question, scored_chunks=[])
+    return {
+        "success": True,
+        "message": "AI response generated",
+        "data": {
+            "answer": result.get("content", ""),
+            "sources": result.get("sources", [])
+        }
+    }
